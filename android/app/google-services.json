@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "961611495773",
+    "project_id": "neon-dc435",
+    "storage_bucket": "neon-dc435.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961611495773:android:1fdf8b56636e9cea0b50b4",
+        "android_client_info": {
+          "package_name": "com.example.main"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "961611495773-3vb1fsk88ma8q3rdl111pcnfikl2r6g1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.main",
+            "certificate_hash": "fe681dc0aae6aedb120c416cb7f7a1c1391ff0fb"
+          }
+        },
+        {
+          "client_id": "961611495773-ta4fimdm88tambpji32jlst5828domq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJNIP13zJTsQ_p9tVuhn601jfZNIVo-DQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "961611495773-ta4fimdm88tambpji32jlst5828domq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
