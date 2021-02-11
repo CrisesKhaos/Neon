@@ -1,9 +1,13 @@
+// ignore: unused_import
+import 'dart:ffi';
+
 import 'package:firebase_database/firebase_database.dart';
 // ignore: unused_import
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:main/widgets.dart';
+import 'post.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
@@ -203,10 +207,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                Row(
+                Column(
                   children: [
                     Container(
-                      margin: EdgeInsets.fromLTRB(5, 10, 0, 30),
+                      margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
                       height: 50.0,
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
@@ -284,26 +288,55 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
-                    /*Container(
-                constraints: BoxConstraints(maxWidth: 100.0, minHeight: 50.0),
-                margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.pink[400],
-                      Colors.cyan[400],
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.send_rounded,
-                  ),
-                  onPressed: () {},
-                ),
-              )*/
+                    Container(
+                      margin: EdgeInsets.fromLTRB(5, 10, 0, 15),
+                      height: 70.0,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        onPressed: () async {
+                          List<Post> neons;
+                          DataSnapshot _neonsData = await databaseReference
+                              .child("Neons/" + widget.user)
+                              .once();
+                          _neonsData.value?.forEach((key, value) {
+                            value?.forEach((key, value) async {
+                              DataSnapshot posttemp = await databaseReference
+                                  .child("posts/" + value["user"])
+                                  .child(value['post'])
+                                  .once();
+                              print(posttemp.value);
+                            });
+                          });
+                        },
+                        padding: EdgeInsets.all(0.0),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.purple,
+                                  Colors.pink,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0)),
+                          child: Container(
+                            constraints: BoxConstraints(
+                                maxWidth: 400.0,
+                                maxHeight: 500.0,
+                                minHeight: 500.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Neons",
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 25),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 /*
