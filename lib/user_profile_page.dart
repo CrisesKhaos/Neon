@@ -1,13 +1,8 @@
-// ignore: unused_import
-import 'dart:ffi';
-
 import 'package:firebase_database/firebase_database.dart';
-// ignore: unused_import
-import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:main/widgets.dart';
 import 'post.dart';
+import 'neon.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
@@ -27,19 +22,21 @@ class _ProfilePageState extends State<ProfilePage> {
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
   Set<Widget> allPosts = {};
+  DataSnapshot numPosts;
+  void getPosts() async {
+    this.numPosts =
+        await databaseReference.child('posts/' + widget.user).once();
+  }
 
   @override
   void initState() {
-    print(widget.visitor);
-    print(widget.user);
     super.initState();
-
+    getPosts();
     if (widget.visitor == widget.user) {
       setState(() {
         visitorIsUser = true;
         following = "Edit Profile";
       });
-      print(visitorIsUser);
     } else {
       databaseReference
           .child('user_details/' + widget.user)
@@ -68,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
           int flwing = values['following'].length - 1;
           int flwers = values['followers'].length - 1;
           print(values['followers'].length - 1);
+
           return Scaffold(
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -98,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                              child: Text('00',
+                              child: Text(numPosts.value.length.toString(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 27,
@@ -295,19 +293,32 @@ class _ProfilePageState extends State<ProfilePage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         onPressed: () async {
-                          List<Post> neons;
+                          List<Post> neons = [];
                           DataSnapshot _neonsData = await databaseReference
                               .child("Neons/" + widget.user)
                               .once();
-                          _neonsData.value?.forEach((key, value) {
-                            value?.forEach((key, value) async {
-                              DataSnapshot posttemp = await databaseReference
-                                  .child("posts/" + value["user"])
-                                  .child(value['post'])
-                                  .once();
-                              print(posttemp.value);
+                          _neonsData.value.forEach((key, value) {
+                            print('hellooo');
+                            value.forEach((key, value) async {
+                              print(value["user"]);
+                              print(value['post']);
+                              DataSnapshot tempPostData =
+                                  await databaseReference
+                                      .child("posts/" + value["user"])
+                                      .child(value['post'])
+                                      .once();
+                              Post postTemp = createPost(value["user"],
+                                  tempPostData.value, value['post']);
+                              neons.add(postTemp);
                             });
                           });
+                          assert(neons != null);
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NeonPage(
+                                    widget.user, widget.visitor, neons)),
+                          );
                         },
                         padding: EdgeInsets.all(0.0),
                         child: Ink(

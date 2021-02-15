@@ -159,84 +159,88 @@ class PostListState extends State<PostList> {
   @override
   Widget build(BuildContext context) {
     if (widget.listItems != null)
-      return ListView.builder(
-        itemCount: this.widget.listItems.length,
-        itemBuilder: (context, index) {
-          var post = this.widget.listItems[index];
-          return Card(
-            elevation: 40,
-            shadowColor: Colors.pink[200],
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      child: Icon(Icons.person),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    ),
-                    Padding(
-                      child: Text(post.userName),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    ),
-                  ],
-                ),
-                Image.network(post.imageUrl),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.favorite),
-                      onPressed: () {
-                        this.changelix(() => post.likePost(widget.usertemp));
-                      },
-                      color: post.usersLiked.contains(widget.usertemp)
-                          ? Colors.redAccent[700]
-                          : Colors.black,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                      child: Text(
-                        post.usersLiked.length.toString(),
-                        style: TextStyle(fontSize: 16),
+      return Builder(builder: (context) {
+        return ListView.builder(
+          itemCount: this.widget.listItems.length,
+          itemBuilder: (context, index) {
+            var post = this.widget.listItems[index];
+
+            return Card(
+              elevation: 40,
+              shadowColor: Colors.pink[200],
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        child: Icon(Icons.person),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       ),
-                    ),
-                    Spacer(),
-                    IconButton(
-                      alignment: Alignment.center,
-                      icon: Icon(Icons.label_important_outline_rounded),
-                      onPressed: () async {
-                        Neon neon =
-                            new Neon(post.rand, post.userName, widget.usertemp);
-                        await neon.monthExists()
-                            ? oneAlertBox(context,
-                                "You can Neon only One post per month!")
-                            : neon.toDatabase();
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                      Padding(
+                        child: Text(post.userName),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
+                    ],
+                  ),
+                  Image.network(post.imageUrl),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.favorite),
+                        onPressed: () {
+                          this.changelix(() => post.likePost(widget.usertemp));
+                        },
+                        color: post.usersLiked.contains(widget.usertemp)
+                            ? Colors.redAccent[700]
+                            : Colors.black,
+                      ),
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                         child: Text(
-                          post.userName,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        )),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                      child: Text(post.caption),
-                    )
-                  ],
-                )
-              ],
-            ),
-          );
-        },
-      );
+                          post.usersLiked.length.toString(),
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        alignment: Alignment.center,
+                        icon: Icon(Icons.label_important_outline_rounded),
+                        onPressed: () async {
+                          Neon neon = new Neon(
+                              post.rand, post.userName, widget.usertemp);
+                          await neon.monthExists()
+                              ? oneAlertBox(context,
+                                  "You can Neon only One post per month!")
+                              : neon.toDatabase();
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                          child: Text(
+                            post.userName,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          )),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                        child: Text(post.caption),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      });
     else
       return Text(
         'No posts yet ☹',

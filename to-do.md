@@ -7,6 +7,8 @@
 > flare
 > route in main
 
+> > put everything in one fututre
+
 user profile page-
 
 > init state!!!!

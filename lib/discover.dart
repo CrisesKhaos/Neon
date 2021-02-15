@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:main/user_details.dart';
 import 'package:main/user_profile_page.dart';
 
-import 'home_page.dart';
-
 final databaseReference = FirebaseDatabase.instance.reference();
 
 class DiscoverPage extends StatefulWidget {
@@ -30,7 +28,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: ListView.builder(
+
         itemCount: _userDetails.length,
         itemBuilder: (context, index) {
           var shownUser = _userDetails[index];

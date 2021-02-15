@@ -38,8 +38,10 @@ class Post {
     return id.key;
   }
 
-  void updateLix() {
-    print(rand);
+  void updateLix(String liker) {
+    databaseReference
+        .child('posts/' + this.userName + '/hasLiked/' + liker)
+        .update({"liked": true});
     databaseReference.child('posts/' + this.userName + '/' + this.rand).update({
       "usersLiked": this.usersLiked.toList(),
     });
@@ -47,7 +49,7 @@ class Post {
 
   void likePost(String user) {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
-    updateLix();
+    updateLix(user);
   }
 }
 
