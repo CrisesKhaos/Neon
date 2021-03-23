@@ -102,7 +102,7 @@ class _NewPostPageState extends State<NewPostPage> {
       File croppedImage = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-        compressQuality: 70,
+        compressQuality: 50,
         maxHeight: 1000,
         maxWidth: 1000,
         compressFormat: ImageCompressFormat.jpg,

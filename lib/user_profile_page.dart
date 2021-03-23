@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:main/edit_profile.dart';
 import 'package:main/widgets.dart';
 import 'post.dart';
 import 'neon.dart';
@@ -258,7 +259,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             });
                           } else
-                            null;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      PreEditProfile(widget.user)),
+                            );
                         },
                         padding: EdgeInsets.all(0.0),
                         child: Ink(

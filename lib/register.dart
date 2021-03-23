@@ -65,13 +65,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     errorText: userError,
                   ),
                   onChanged: (text) {
-                    print("hello");
                     //? wtf is happening here pls sendhelp
                     userSnap = databaseReference
                         .child('credentials/' + userController.text);
 
                     userSnap.once().then((snapshot) {
-                      print(snapshot.value);
                       if (snapshot.value != null && userController.text != "")
                         setState(() {
                           userAvailable = false;
