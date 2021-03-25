@@ -12,6 +12,7 @@ class Post {
   final String caption;
   Set usersLiked = {};
   Set comments = {};
+  Set hasLiked = {};
   var rand;
   //DatabaseReference postRef = reference.child('posts/' + this.userName);
   Post(this.userName, this.imageUrl, this.caption, {this.rand});
@@ -32,6 +33,7 @@ class Post {
         'caption': this.caption,
         'usersLiked': [],
         'comments': [],
+        'hasliked': [],
       });
     }
 
@@ -39,9 +41,6 @@ class Post {
   }
 
   void updateLix(String liker) {
-    databaseReference
-        .child('posts/' + this.userName + '/hasLiked/' + liker)
-        .update({"liked": true});
     databaseReference.child('posts/' + this.userName + '/' + this.rand).update({
       "usersLiked": this.usersLiked.toList(),
     });
@@ -50,6 +49,16 @@ class Post {
   void likePost(String user) {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
+    hasLiked.contains(user) ? null : updateActivity(user);
+  }
+
+  void updateActivity(String liker) {
+    databaseReference.child('posts/' + this.userName + "/" + this.rand).update(
+      {'hasLiked': this.hasLiked..toList},
+    );
+    databaseReference.child("activity/" + this.userName + "/liked").update(
+      {liker: "liked"},
+    );
   }
 }
 
@@ -61,6 +70,7 @@ Post createPost(String userName, var value, var key) {
     'caption': '',
     'usersLiked': [],
     'comments': [],
+    'hasLiked': [],
   };
   value.forEach((key, value) {
     attributes[key] = value;
@@ -74,5 +84,6 @@ Post createPost(String userName, var value, var key) {
   );
   print(post.usersLiked);
   post.usersLiked = new Set.from(attributes['usersLiked']);
+  post.hasLiked = new Set.of(attributes['hasLiked']);                                                                                                                                       
   return post;
 }
