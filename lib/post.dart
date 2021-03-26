@@ -84,6 +84,6 @@ Post createPost(String userName, var value, var key) {
   );
   print(post.usersLiked);
   post.usersLiked = new Set.from(attributes['usersLiked']);
-  post.hasLiked = new Set.of(attributes['hasLiked']);                                                                                                                                       
+  post.hasLiked = new Set.from(attributes['hasLiked']);
   return post;
 }

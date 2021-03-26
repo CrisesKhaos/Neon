@@ -57,7 +57,7 @@ void oneAlertBox(BuildContext context, String title) {
           title: Text(title),
           actions: <Widget>[
             FlatButton(
-              child: Text("Ok"),
+              child: Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

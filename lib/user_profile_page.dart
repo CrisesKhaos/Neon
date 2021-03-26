@@ -22,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool visitorIsUser = false;
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
-  Set<Widget> allPosts = {};
+  List<Widget> allPosts = [];
   DataSnapshot numPosts;
   void getPosts() async {
     this.numPosts =
@@ -68,65 +68,113 @@ class _ProfilePageState extends State<ProfilePage> {
           print(values['followers'].length - 1);
 
           return Scaffold(
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            body: ListView(
+              scrollDirection: Axis.vertical,
               children: [
-                Padding(
-                    padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.account_circle,
-                          size: 170,
-                        )
-                        /*: Image.network(
-                              values['pfp'],
-                              height: 170,
-                              width: 170,
-                            )*/
-                      ],
-                    )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
+                  verticalDirection: VerticalDirection.down,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Card(
-                        color: Colors.lightBlue,
-                        child: Column(
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                              child: Text(numPosts.value.length.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 27,
-                                    color: Colors.white,
-                                  )),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                child: Text(
-                                  'Posts',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.white,
-                                  ),
-                                )),
+                            Icon(
+                              Icons.account_circle,
+                              size: 170,
+                            )
+                            /*: Image.network(
+                                    values['pfp'],
+                                    height: 170,
+                                    width: 170,
+                                  )*/
                           ],
+                        )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Card(
+                            color: Colors.lightBlue,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                  child: Text(numPosts.value.length.toString(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 27,
+                                        color: Colors.white,
+                                      )),
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                    child: Text(
+                                      'Posts',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.white,
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                        child: InkWell(
+                        Expanded(
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ListWithAppBar(
+                                          values['following'],
+                                          "Following",
+                                          widget.visitor),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  color: Colors.lightBlue,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                        child: Text(
+                                            values['following'] == null
+                                                ? "0"
+                                                : flwing.toString(),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 27,
+                                              color: Colors.white,
+                                            )),
+                                      ),
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                          child: Text(
+                                            'Following',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.white,
+                                            ),
+                                          )),
+                                    ],
+                                  ),
+                                ))),
+                        Expanded(
+                          child: InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ListWithAppBar(
-                                      values['following'],
-                                      "Following",
+                                      values['followers'],
+                                      "Followers",
                                       widget.visitor),
                                 ),
                               );
@@ -138,9 +186,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                                     child: Text(
-                                        values['following'] == null
+                                        values['followers'] == null
                                             ? "0"
-                                            : flwing.toString(),
+                                            : flwers.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 27,
@@ -150,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
                                       child: Text(
-                                        'Following',
+                                        'Followers',
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w300,
@@ -159,224 +207,190 @@ class _ProfilePageState extends State<ProfilePage> {
                                       )),
                                 ],
                               ),
-                            ))),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ListWithAppBar(
-                                  values['followers'],
-                                  "Followers",
-                                  widget.visitor),
                             ),
-                          );
-                        },
-                        child: Card(
-                          color: Colors.lightBlue,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                child: Text(
-                                    values['followers'] == null
-                                        ? "0"
-                                        : flwers.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 27,
-                                      color: Colors.white,
-                                    )),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                                  child: Text(
-                                    'Followers',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.white,
-                                    ),
-                                  )),
-                            ],
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
-                      height: 50.0,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        elevation: 20,
-                        onPressed: () async {
-                          if (visitorIsUser == false) {
-                            DataSnapshot snapshotVisitor =
-                                await databaseReference
-                                    .child('user_details/' + widget.visitor)
-                                    .child('following')
-                                    .once();
-                            setState(() {
-                              if (values['followers'] != null) {
-                                followersTemp = values['followers'].toSet();
-                                followersTemp.contains(widget.visitor)
-                                    ? followersTemp.remove(widget.visitor)
-                                    : followersTemp.add(widget.visitor);
-                              } else
-                                followersTemp = {widget.visitor};
+                    Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
+                          height: 50.0,
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                            elevation: 20,
+                            onPressed: () async {
+                              if (visitorIsUser == false) {
+                                DataSnapshot snapshotVisitor =
+                                    await databaseReference
+                                        .child('user_details/' + widget.visitor)
+                                        .child('following')
+                                        .once();
+                                setState(() {
+                                  if (values['followers'] != null) {
+                                    followersTemp = values['followers'].toSet();
+                                    followersTemp.contains(widget.visitor)
+                                        ? followersTemp.remove(widget.visitor)
+                                        : followersTemp.add(widget.visitor);
+                                  } else
+                                    followersTemp = {widget.visitor};
 
-                              if (snapshotVisitor.value != null) {
-                                print(visitorfollowingTemp);
-                                visitorfollowingTemp =
-                                    snapshotVisitor.value.toSet();
-                                visitorfollowingTemp.contains(widget.user)
-                                    ? visitorfollowingTemp.remove(widget.user)
-                                    : visitorfollowingTemp.add(widget.user);
+                                  if (snapshotVisitor.value != null) {
+                                    print(visitorfollowingTemp);
+                                    visitorfollowingTemp =
+                                        snapshotVisitor.value.toSet();
+                                    visitorfollowingTemp.contains(widget.user)
+                                        ? visitorfollowingTemp
+                                            .remove(widget.user)
+                                        : visitorfollowingTemp.add(widget.user);
+                                  } else
+                                    visitorfollowingTemp = {widget.visitor};
+                                  databaseReference
+                                      .child('user_details/' + widget.user)
+                                      .child('followers')
+                                      .set(followersTemp.toList());
+                                  databaseReference
+                                      .child('user_details/' + widget.visitor)
+                                      .child('following')
+                                      .set(visitorfollowingTemp.toList());
+                                  if (following != 'Following') {
+                                    gradColor1 = Colors.teal[400];
+                                    gradColor2 = Colors.tealAccent[400];
+                                    following = 'Following';
+                                  } else {
+                                    gradColor1 = Colors.pink[400];
+                                    gradColor2 = Colors.cyan[400];
+                                    following = 'Follow';
+                                  }
+                                });
                               } else
-                                visitorfollowingTemp = {widget.visitor};
-                              databaseReference
-                                  .child('user_details/' + widget.user)
-                                  .child('followers')
-                                  .set(followersTemp.toList());
-                              databaseReference
-                                  .child('user_details/' + widget.visitor)
-                                  .child('following')
-                                  .set(visitorfollowingTemp.toList());
-                              if (following != 'Following') {
-                                gradColor1 = Colors.teal[400];
-                                gradColor2 = Colors.tealAccent[400];
-                                following = 'Following';
-                              } else {
-                                gradColor1 = Colors.pink[400];
-                                gradColor2 = Colors.cyan[400];
-                                following = 'Follow';
-                              }
-                            });
-                          } else
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      PreEditProfile(widget.user)),
-                            );
-                        },
-                        padding: EdgeInsets.all(0.0),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  gradColor1,
-                                  gradColor2,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PreEditProfile(widget.user)),
+                                );
+                            },
+                            padding: EdgeInsets.all(0.0),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      gradColor1,
+                                      gradColor2,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              child: Container(
+                                constraints: BoxConstraints(
+                                    maxWidth: 400.0, minHeight: 50.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  following,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(10.0)),
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth: 400.0, minHeight: 50.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              following,
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(5, 10, 0, 15),
-                      height: 70.0,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        onPressed: () async {
-                          List<Post> neons = [];
-                          DataSnapshot _neonsData = await databaseReference
-                              .child("Neons/" + widget.user)
-                              .once();
-                          _neonsData.value.forEach((key, value) {
-                            print('hellooo');
-                            value.forEach((key, value) async {
-                              print(value["user"]);
-                              print(value['post']);
-                              DataSnapshot tempPostData =
-                                  await databaseReference
-                                      .child("posts/" + value["user"])
-                                      .child(value['post'])
-                                      .once();
-                              Post postTemp = createPost(value["user"],
-                                  tempPostData.value, value['post']);
-                              neons.add(postTemp);
-                            });
-                          });
-                          assert(neons != null);
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NeonPage(
-                                    widget.user, widget.visitor, neons)),
-                          );
-                        },
-                        padding: EdgeInsets.all(0.0),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.purple,
-                                  Colors.pink,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                        Container(
+                          margin: EdgeInsets.fromLTRB(5, 10, 0, 15),
+                          height: 70.0,
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                            onPressed: () async {
+                              List<Post> neons = [];
+                              DataSnapshot _neonsData = await databaseReference
+                                  .child("Neons/" + widget.user)
+                                  .once();
+                              _neonsData.value.forEach((key, value) {
+                                print('hellooo');
+                                value.forEach((key, value) async {
+                                  print(value["user"]);
+                                  print(value['post']);
+                                  DataSnapshot tempPostData =
+                                      await databaseReference
+                                          .child("posts/" + value["user"])
+                                          .child(value['post'])
+                                          .once();
+                                  Post postTemp = createPost(value["user"],
+                                      tempPostData.value, value['post']);
+                                  neons.add(postTemp);
+                                });
+                              });
+                              assert(neons != null);
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NeonPage(
+                                        widget.user, widget.visitor, neons)),
+                              );
+                            },
+                            padding: EdgeInsets.all(0.0),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.purple,
+                                      Colors.pink,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              child: Container(
+                                constraints: BoxConstraints(
+                                    maxWidth: 400.0,
+                                    maxHeight: 500.0,
+                                    minHeight: 500.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Neons",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 25),
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(10.0)),
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth: 400.0,
-                                maxHeight: 500.0,
-                                minHeight: 500.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Neons",
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 25),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                /*
-              FutureBuilder(
-                  future:
-                      databaseReference.child('posts/' + widget.user).once(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DataSnapshot> _postssnapshot) {
-                    Map<dynamic, dynamic> userPosts = _postssnapshot.data.value;
-                    print(userPosts);
-                    userPosts.forEach((key, value) {
-                      if (key == "post")
+                FutureBuilder(
+                    future:
+                        databaseReference.child('posts/' + widget.user).once(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DataSnapshot> _postssnapshot) {
+                      Map<dynamic, dynamic> userPosts =
+                          _postssnapshot.data.value;
+                      userPosts.forEach((key, value) {
                         allPosts.add(Image.network(
-                          value,
-                          width: 100,
+                          value["post"],
                           height: 100,
+                          width: 100,
                         ));
-                    });
-                    print(allPosts);
-                    return GridView(
-                      children: allPosts.toList(),
-                    );
-                  })*/
+                      });
+                      print('sheeeeeeeeshhhhhhhh');
+                      print(allPosts);
+                      return GridView.count(
+                        physics: ScrollPhysics(),
+                        padding: EdgeInsets.only(top: 15),
+                        mainAxisSpacing: 7,
+                        crossAxisSpacing: 7,
+                        shrinkWrap: true,
+                        crossAxisCount: 3,
+                        children: allPosts,
+                      );
+                    })
               ],
             ),
           );
