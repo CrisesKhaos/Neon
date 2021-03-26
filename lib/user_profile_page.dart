@@ -68,6 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
           print(values['followers'].length - 1);
 
           return Scaffold(
+           
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [

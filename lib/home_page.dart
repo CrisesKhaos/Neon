@@ -43,6 +43,27 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        endDrawer: _currentIndex == 4
+            ? Drawer(
+                elevation: 16.0,
+                child: ListView(
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Text(
+                        'Hello, ' + widget.userName,
+                        style: TextStyle(fontSize: 25),
+                      ),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                "https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
+                            fit: BoxFit.fill),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : null,
         appBar: _currentIndex != 2
             ? AppBar(
                 leading: _currentIndex == 0
@@ -59,21 +80,16 @@ class HomePageState extends State<HomePage> {
                     : _currentIndex == 4
                         ? Icon(Icons.lock)
                         : null,
-                actions: _currentIndex == 0 || _currentIndex == 4
+                /*actions: _currentIndex == 0 || _currentIndex == 4
                     ? [
                         _currentIndex == 0
                             ? IconButton(
                                 icon: Icon(Icons.send_rounded),
                                 onPressed: () {},
                               )
-                            : _currentIndex == 4
-                                ? IconButton(
-                                    icon: Icon(Icons.menu),
-                                    onPressed: () {},
-                                  )
-                                : null
+                            : null
                       ]
-                    : null,
+                    : null*/
                 elevation: 20,
                 centerTitle: _currentIndex == 0 ? true : false,
                 title: Text(
