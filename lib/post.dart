@@ -46,19 +46,40 @@ class Post {
     });
   }
 
-  void likePost(String user) {
+  void likePost(String user) async {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
-    hasLiked.contains(user) ? null : updateActivity(user);
+    print(hasLiked);
+    hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
+    print(user);
   }
 
-  void updateActivity(String liker) {
+  void updateActivity(String liker, bool liked) async {
+    hasLiked.add(liker);
+    print('we in boysss');
     databaseReference.child('posts/' + this.userName + "/" + this.rand).update(
-      {'hasLiked': this.hasLiked..toList},
+      {'hasLiked': this.hasLiked.toList()},
     );
-    databaseReference.child("activity/" + this.userName + "/liked").update(
-      {liker: "liked"},
-    );
+
+    //databaseReference.child('')
+    DataSnapshot setTemp =
+        await databaseReference.child("activity/" + this.userName).once();
+    print(setTemp.value);
+    print('bruhh');
+    if (setTemp.value != null) {
+      Map<dynamic, dynamic> actTemp = setTemp.value;
+      print(actTemp);
+      actTemp.addAll({liker: "liked"});
+      print(actTemp.values);
+      print(actTemp);
+      print('hiiiiiiiiiiiiiiiiii');
+
+      await databaseReference.child("activity/" + this.userName).set(actTemp);
+    } else {
+      databaseReference
+          .child("activity/" + this.userName)
+          .set({liker: "liked"});
+    }
   }
 }
 
