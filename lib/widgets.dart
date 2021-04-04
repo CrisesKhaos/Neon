@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'package:http/http.dart';
+
 import 'package:main/user_profile_page.dart';
+
+//Widget diplayPost(Post post) {}
 
 class ListWithAppBar extends StatefulWidget {
   final List list;

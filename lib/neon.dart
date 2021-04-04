@@ -39,14 +39,13 @@ class _NeonPageState extends State<NeonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.pink,
-        title: Text(
-          widget.user + 's' + ' Neons',
-          style: TextStyle(fontSize: 25),
+        appBar: AppBar(
+          backgroundColor: Colors.pink,
+          title: Text(
+            widget.user + 's' + ' Neons',
+            style: TextStyle(fontSize: 25),
+          ),
         ),
-      ),
-      body: PostList(widget.neons, widget.visitor),
-    );
+        body: PostList(widget.neons, widget.visitor));
   }
 }

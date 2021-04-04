@@ -27,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void getPosts() async {
     this.numPosts =
         await databaseReference.child('posts/' + widget.user).once();
+    print(numPosts.value);
   }
 
   @override
@@ -68,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
           print(values['followers'].length - 1);
 
           return Scaffold(
-           
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
@@ -102,7 +102,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                  child: Text(numPosts.value.length.toString(),
+                                  child: Text(
+                                      numPosts.value == null
+                                          ? "0"
+                                          : numPosts.value.length.toString(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 27,
@@ -239,7 +242,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     followersTemp = {widget.visitor};
 
                                   if (snapshotVisitor.value != null) {
-                                    print(visitorfollowingTemp);
                                     visitorfollowingTemp =
                                         snapshotVisitor.value.toSet();
                                     visitorfollowingTemp.contains(widget.user)
@@ -324,6 +326,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Post postTemp = createPost(value["user"],
                                       tempPostData.value, value['post']);
                                   neons.add(postTemp);
+                                  print(neons);
+                                  print('sheeeeeeeeeesh');
                                 });
                               });
                               assert(neons != null);

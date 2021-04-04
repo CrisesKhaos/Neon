@@ -6,6 +6,7 @@ import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 import 'database.dart';
 import 'new_post.dart';
+import 'activity.dart';
 import 'post.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
@@ -151,7 +152,9 @@ class HomePageState extends State<HomePage> {
             ? ProfilePage(widget.userName, widget.userName)
             : _currentIndex == 2
                 ? DiscoverPage(widget.userName)
-                : PostList(this.posts, widget.userName));
+                : _currentIndex == 3
+                    ? ActivityPage(widget.userName)
+                    : PostList(this.posts, widget.userName));
   }
 }
 

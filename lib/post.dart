@@ -13,6 +13,7 @@ class Post {
   Set usersLiked = {};
   Set comments = {};
   Set hasLiked = {};
+  Set neon = {};
   var rand;
   //DatabaseReference postRef = reference.child('posts/' + this.userName);
   Post(this.userName, this.imageUrl, this.caption, {this.rand});
@@ -34,6 +35,7 @@ class Post {
         'usersLiked': [],
         'comments': [],
         'hasliked': [],
+        'neon': []
       });
     }
 
@@ -49,31 +51,21 @@ class Post {
   void likePost(String user) async {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
-    print(hasLiked);
-    hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
-    print(user);
+    if (this.userName != user) {
+      hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
+    }
   }
 
   void updateActivity(String liker, bool liked) async {
     hasLiked.add(liker);
-    print('we in boysss');
     databaseReference.child('posts/' + this.userName + "/" + this.rand).update(
       {'hasLiked': this.hasLiked.toList()},
     );
-
-    //databaseReference.child('')
     DataSnapshot setTemp =
         await databaseReference.child("activity/" + this.userName).once();
-    print(setTemp.value);
-    print('bruhh');
     if (setTemp.value != null) {
       Map<dynamic, dynamic> actTemp = setTemp.value;
-      print(actTemp);
       actTemp.addAll({liker: "liked"});
-      print(actTemp.values);
-      print(actTemp);
-      print('hiiiiiiiiiiiiiiiiii');
-
       await databaseReference.child("activity/" + this.userName).set(actTemp);
     } else {
       databaseReference
@@ -92,6 +84,7 @@ Post createPost(String userName, var value, var key) {
     'usersLiked': [],
     'comments': [],
     'hasLiked': [],
+    'neon': []
   };
   value.forEach((key, value) {
     attributes[key] = value;
@@ -106,5 +99,6 @@ Post createPost(String userName, var value, var key) {
   print(post.usersLiked);
   post.usersLiked = new Set.from(attributes['usersLiked']);
   post.hasLiked = new Set.from(attributes['hasLiked']);
+  post.neon = new Set.from(attributes['neon']);
   return post;
 }

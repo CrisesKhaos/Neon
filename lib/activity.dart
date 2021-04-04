@@ -1,21 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:main/creds_database.dart';
 
-class Activity extends StatefulWidget {
+class ActivityPage extends StatefulWidget {
   final user;
   @override
-  _ActivityState createState() => _ActivityState();
+  _ActivityPageState createState() => _ActivityPageState();
 
-  Activity(this.user);
+  ActivityPage(this.user);
 }
 
-class _ActivityState extends State<Activity> {
+class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("activity/" + widget.user).once(),
       builder: (context, _snapshot) {
-        print(_snapshot.data);
+        Map<dynamic, dynamic> temp = _snapshot.data.value;
+        List names = temp.keys.toList();
+        _snapshot.data.value.forEach((key, value) {});
+        return ListView.builder(
+          itemCount: temp.keys.toList().length,
+          itemBuilder: (ctx, index) {
+            return Card(
+              margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+              elevation: 5,
+              child: ListTile(
+                onTap: () {},
+                leading: Icon(
+                  Icons.account_circle,
+                  size: 50,
+                ),
+                title: Text(
+                  names[index] + " liked your post",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            );
+          },
+        );
       },
     );
   }
