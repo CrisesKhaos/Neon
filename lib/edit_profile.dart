@@ -62,12 +62,20 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  TextEditingController confirmController = new TextEditingController();
+  TextEditingController passController = new TextEditingController();
+  TextEditingController mailController = new TextEditingController();
+  bool samePass = true;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
       builder: (context, _snapshot) {
         if (_snapshot.hasData) {
+          this.mailController.text = _snapshot.data.value['mail'];
+
+          //this.userController.text = _snapshot.data.key;
           return Scaffold(
             appBar: AppBar(
               title: Text('Edit Profile'),
@@ -82,7 +90,7 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    //enabled: false,
+                    enabled: false,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.person_outline),
                       border: OutlineInputBorder(
@@ -96,13 +104,14 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: this.mailController,
                     //enabled: false,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.mail_outline),
                       border: OutlineInputBorder(
                           borderSide:
                               BorderSide(width: 10, color: Colors.yellow)),
-                      labelText: _snapshot.data.value['mail'],
+                      labelText: "E-mail",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -110,12 +119,44 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: this.passController,
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 10, color: Colors.yellow)),
-                        labelText: "Confirm Password"),
+                        labelText: "New Password"),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: this.confirmController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline),
+                      border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(width: 10, color: Colors.yellow)),
+                      labelText: "Confirm New Password",
+                      suffixIcon: confirmController.text.isNotEmpty
+                          ? samePass
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.green,
+                                )
+                              : Icon(
+                                  Icons.cancel_rounded,
+                                  color: Colors.red[800],
+                                )
+                          : null,
+                    ),
+                    onChanged: (text) {
+                      setState(() {
+                        passController.text == confirmController.text
+                            ? samePass = true
+                            : samePass = false;
+                      });
+                    },
                   ),
                 ),
                 Row(
@@ -124,8 +165,17 @@ class _EditProfileState extends State<EditProfile> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
-                        child: Text("Change Password"),
-                        onPressed: null,
+                        child: Text("Confirm"),
+                        onPressed: () async {
+                          print(passController.text);
+                          if (passController.text.isEmpty)
+                            databaseReference
+                                .child("credentials/" + widget.userName)
+                                .update({
+                              "mail": this.mailController.text,
+                            });
+                          else {}
+                        },
                       ),
                     ),
                   ],

@@ -24,10 +24,10 @@ home page -
 > list view
 > builder
 > circle avatar
-> pls help following followers
 
 register -
 
+> trim
 > how to check if the user enter a $ or #
 > blur password
 > confirm password

@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:main/edit_profile.dart';
 import 'package:main/widgets.dart';
 import 'post.dart';
@@ -375,26 +376,29 @@ class _ProfilePageState extends State<ProfilePage> {
                         databaseReference.child('posts/' + widget.user).once(),
                     builder: (BuildContext context,
                         AsyncSnapshot<DataSnapshot> _postssnapshot) {
-                      Map<dynamic, dynamic> userPosts =
-                          _postssnapshot.data.value;
-                      userPosts.forEach((key, value) {
-                        allPosts.add(Image.network(
-                          value["post"],
-                          height: 100,
-                          width: 100,
-                        ));
-                      });
-                      print('sheeeeeeeeshhhhhhhh');
-                      print(allPosts);
-                      return GridView.count(
-                        physics: ScrollPhysics(),
-                        padding: EdgeInsets.only(top: 15),
-                        mainAxisSpacing: 7,
-                        crossAxisSpacing: 7,
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        children: allPosts,
-                      );
+                      if (_postssnapshot.hasData) {
+                        Map<dynamic, dynamic> userPosts =
+                            _postssnapshot.data.value;
+                        userPosts.forEach((key, value) {
+                          allPosts.add(Image.network(
+                            value["post"],
+                            height: 100,
+                            width: 100,
+                          ));
+                        });
+
+                        return GridView.count(
+                          physics: ScrollPhysics(),
+                          padding: EdgeInsets.only(top: 15),
+                          mainAxisSpacing: 7,
+                          crossAxisSpacing: 7,
+                          shrinkWrap: true,
+                          crossAxisCount: 3,
+                          children: allPosts,
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
                     })
               ],
             ),
