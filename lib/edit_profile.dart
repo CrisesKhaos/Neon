@@ -66,6 +66,8 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController passController = new TextEditingController();
   TextEditingController mailController = new TextEditingController();
   bool samePass = true;
+  bool passChanged = false;
+  bool mailChanged = false;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +116,12 @@ class _EditProfileState extends State<EditProfile> {
                       labelText: "E-mail",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    onChanged: (text) {
+                      if (text.trim() != _snapshot.data["mail"].trim())
+                        setState(() {
+                          passChanged = false;
+                        });
+                    },
                   ),
                 ),
                 Padding(
@@ -167,14 +175,24 @@ class _EditProfileState extends State<EditProfile> {
                       child: ElevatedButton(
                         child: Text("Confirm"),
                         onPressed: () async {
-                          print(passController.text);
-                          if (passController.text.isEmpty)
+                          if (passController.text.isEmpty &&
+                              mailChanged == true)
                             databaseReference
                                 .child("credentials/" + widget.userName)
                                 .update({
                               "mail": this.mailController.text,
                             });
-                          else {}
+                          else if (passController.text.isNotEmpty &&
+                              samePass == false)
+                            oneAlertBox(context, "Your passwords do not match");
+                          else if (passController.text.isNotEmpty &&
+                              samePass == true)
+                            databaseReference
+                                .child("credentials/" + widget.userName)
+                                .update({
+                              "mail": this.mailController.text,
+                              "pass": this.confirmController.text
+                            });
                         },
                       ),
                     ),

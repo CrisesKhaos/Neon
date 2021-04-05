@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:main/edit_profile.dart';
+import 'package:main/user_details.dart';
 import 'package:main/widgets.dart';
 import 'post.dart';
 import 'neon.dart';
@@ -67,8 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Map<dynamic, dynamic> values = snapshot.data.value;
           int flwing = values['following'].length - 1;
           int flwers = values['followers'].length - 1;
-          print(values['followers'].length - 1);
-
+          print(values['pfp']);
           return Scaffold(
             body: ListView(
               scrollDirection: Axis.vertical,
@@ -82,15 +82,24 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.account_circle,
-                              size: 170,
-                            )
-                            /*: Image.network(
-                                    values['pfp'],
-                                    height: 170,
-                                    width: 170,
-                                  )*/
+                            values["pfp"].toString().isEmpty
+                                ? Icon(
+                                    Icons.account_circle,
+                                    size: 170,
+                                  )
+                                : ClipOval(
+                                    child: Image.network(
+                                      values['pfp'],
+                                      height: 170,
+                                      width: 170,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                            /*Image.network(
+                              values['pfp'],
+                              height: 170,
+                              width: 170,
+                            )*/
                           ],
                         )),
                     Row(
@@ -376,28 +385,34 @@ class _ProfilePageState extends State<ProfilePage> {
                         databaseReference.child('posts/' + widget.user).once(),
                     builder: (BuildContext context,
                         AsyncSnapshot<DataSnapshot> _postssnapshot) {
+                      if (_postssnapshot.hasError) return Text("No posts yet!");
                       if (_postssnapshot.hasData) {
-                        Map<dynamic, dynamic> userPosts =
-                            _postssnapshot.data.value;
-                        userPosts.forEach((key, value) {
-                          allPosts.add(Image.network(
-                            value["post"],
-                            height: 100,
-                            width: 100,
-                          ));
-                        });
+                        if (_postssnapshot.data.value != null) {
+                          print('sheeeeeesh');
+                          Map<dynamic, dynamic> userPosts =
+                              _postssnapshot.data.value;
+                          userPosts.forEach((key, value) {
+                            allPosts.add(Image.network(
+                              value["post"],
+                              height: 100,
+                              width: 100,
+                            ));
+                          });
 
-                        return GridView.count(
-                          physics: ScrollPhysics(),
-                          padding: EdgeInsets.only(top: 15),
-                          mainAxisSpacing: 7,
-                          crossAxisSpacing: 7,
-                          shrinkWrap: true,
-                          crossAxisCount: 3,
-                          children: allPosts,
-                        );
+                          return GridView.count(
+                            physics: ScrollPhysics(),
+                            padding: EdgeInsets.only(top: 15),
+                            mainAxisSpacing: 7,
+                            crossAxisSpacing: 7,
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            children: allPosts,
+                          );
+                        } else {
+                          return Text("");
+                        }
                       } else {
-                        return CircularProgressIndicator();
+                        return LinearProgressIndicator();
                       }
                     })
               ],
