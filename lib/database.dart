@@ -1,9 +1,9 @@
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 import 'package:main/post.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
-// ignore: missing_return
 Future<List<Post>> returnpostList(String timelineUser) async {
   DataSnapshot dataSnapshot =
       await databaseReference.child('timelines/' + timelineUser).once();
@@ -14,23 +14,21 @@ Future<List<Post>> returnpostList(String timelineUser) async {
   // if (dataSnapshot.value != null) {
   //Map<dynamic, dynamic> values = await dataSnapshot.value;
   //print(values);
-  if (dataSnapshot.value != null) {
-    dataSnapshot.value.forEach(
-      (key, value) async {
-        List postValues = value.split('(split)');
-        //var postPath = postValues[0] + '/'+ postValues[1];
 
-        DataSnapshot postSnapshot = await databaseReference
-            .child('posts/' + postValues[0] + "/" + postValues[1])
-            .once();
-        print(postSnapshot.value);
-        Post post =
-            createPost(postValues[0], postSnapshot.value, postValues[1]);
+  dataSnapshot.value.forEach(
+    (key, value) async {
+      List postValues = value.split('(split)');
+      //var postPath = postValues[0] + '/'+ postValues[1];
 
-        posts.add(post);
-      },
-    );
+      DataSnapshot postSnapshot = await databaseReference
+          .child('posts/' + postValues[0] + "/" + postValues[1])
+          .once();
+      print(postSnapshot.value);
+      Post post = createPost(postValues[0], postSnapshot.value, postValues[1]);
 
-    return posts;
-  }
+      posts.add(post);
+    },
+  );
+
+  return posts;
 }

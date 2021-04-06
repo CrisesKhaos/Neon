@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,12 @@ class NewPostPage extends StatefulWidget {
 
 class _NewPostPageState extends State<NewPostPage> {
   final uuid = Uuid();
-  String url;
+  String? url;
   TextEditingController captioncont = new TextEditingController();
   final databaseReference = FirebaseDatabase.instance.reference();
   @override
   Widget build(BuildContext context) {
-    url == null ? uploadImage(widget.userName) : null;
+    if (url == null) uploadImage(widget.userName);
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +48,7 @@ class _NewPostPageState extends State<NewPostPage> {
               color: Colors.pinkAccent[50],
               child: Padding(
                 padding: EdgeInsets.all(4),
-                child: Image.network(url),
+                child: Image.network(url!),
               ),
               margin: EdgeInsets.fromLTRB(10, 10, 10, 20),
             )
@@ -55,10 +56,9 @@ class _NewPostPageState extends State<NewPostPage> {
             Placeholder(
               color: Colors.black,
             ),
+          // ignore: deprecated_member_use
           RaisedButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 50),
-            //borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]),
-            //highlightedBorderColor: Colors.pink,
             color: Colors.pinkAccent[200],
             highlightColor: Colors.pinkAccent[900],
             shape: RoundedRectangleBorder(
@@ -69,7 +69,7 @@ class _NewPostPageState extends State<NewPostPage> {
             ),
             onPressed: () async {
               if (url != null) {
-                var post = new Post(widget.userName, url, captioncont.text);
+                var post = new Post(widget.userName, url!, captioncont.text);
                 var id = await post.uploadToDatabase();
                 List userFollowers = await getFollowers(widget.userName);
                 updateTimelines(userFollowers, id);
@@ -91,7 +91,7 @@ class _NewPostPageState extends State<NewPostPage> {
   void uploadImage(String user) async {
     var postUrl;
     final _imgpicker = ImagePicker();
-    PickedFile image;
+    late PickedFile? image;
     final _storage = FirebaseStorage.instance;
     image = await _imgpicker.getImage(
       source: ImageSource.gallery,
@@ -99,7 +99,7 @@ class _NewPostPageState extends State<NewPostPage> {
     //var file = File(image.path);
 
     if (image != null) {
-      File croppedImage = await ImageCropper.cropImage(
+      File? croppedImage = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
         compressQuality: 50,
@@ -119,7 +119,7 @@ class _NewPostPageState extends State<NewPostPage> {
       var snpsht = await _storage
           .ref()
           .child('posts/' + user + '/' + uuid.v4())
-          .putFile(croppedImage);
+          .putFile(croppedImage!);
       postUrl = await snpsht.ref.getDownloadURL();
       setState(() {
         url = postUrl;

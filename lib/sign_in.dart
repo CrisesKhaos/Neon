@@ -3,6 +3,7 @@ import 'home_page.dart';
 import 'creds_database.dart';
 import 'register.dart';
 import 'widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatelessWidget {
   @override
@@ -19,7 +20,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String name;
+  late String name;
   var userError;
   var passError;
   TextEditingController userController = new TextEditingController();
@@ -84,13 +85,16 @@ class _BodyState extends State<Body> {
         ),
         Container(
           padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: RaisedButton(
-              color: Colors.pinkAccent[200],
-              padding: EdgeInsets.symmetric(horizontal: 130, vertical: 5),
+          // ignore: deprecated_member_use
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pinkAccent[200],
+                padding: EdgeInsets.symmetric(horizontal: 130, vertical: 5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
+              ),
               //highlightedBorderColor: Colors.pink,
               //borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(30))),
               child: Text(
                 "Sign In",
                 style: TextStyle(color: Colors.white),
@@ -142,6 +146,7 @@ class _BodyState extends State<Body> {
           ),
         ),*/
         Container(
+          // ignore: deprecated_member_use
           child: OutlineButton(
             padding: EdgeInsets.symmetric(vertical: 7, horizontal: 125),
             child: Text(
@@ -150,9 +155,11 @@ class _BodyState extends State<Body> {
             ),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30))),
-            borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]),
+            borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]!),
             highlightedBorderColor: Colors.pink,
             onPressed: () {
+              // ignore: unused_local_variable
+              final SharedPreferences hi;
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => RegisterPage()));
             },

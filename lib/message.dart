@@ -12,6 +12,8 @@ class _MessagePageState extends State<MessagePage> {
     return FutureBuilder(
         future: databaseReference.child("messages/").once(),
         // ignore: missing_return
-        builder: (BuildContext context, AsyncSnapshot _snapshot) {});
+        builder: (BuildContext context, AsyncSnapshot _snapshot) {
+          return Text('poti');
+        });
   }
 }

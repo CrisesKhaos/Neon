@@ -1,3 +1,4 @@
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/discover.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  String text;
+  late String text;
   int _currentIndex = 0;
   var cntlr = TextEditingController();
   List<Post> posts = [];
@@ -177,6 +178,7 @@ class PostListState extends State<PostList> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_null_comparison
     if (widget.listItems != null)
       return Builder(builder: (context) {
         return ListView.builder(

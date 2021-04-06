@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:main/widgets.dart';
 import 'creds_database.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'home_page.dart';
@@ -21,9 +22,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool userAvailable = false;
   bool goodPass = false;
   bool goodmail = false;
-  DatabaseReference userSnap;
+  late DatabaseReference userSnap;
 
-  void giveError(var errorType, {String type}) {
+  void giveError(var errorType, {String? type}) {
     this.setState(() {
       if (type == "pass")
         passError = errorType;
@@ -146,6 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           Container(
             padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            // ignore: deprecated_member_use
             child: RaisedButton(
                 color: Colors.pinkAccent[200],
                 padding: EdgeInsets.symmetric(horizontal: 125, vertical: 5),

@@ -1,8 +1,7 @@
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:main/edit_profile.dart';
-import 'package:main/user_details.dart';
 import 'package:main/widgets.dart';
 import 'post.dart';
 import 'neon.dart';
@@ -25,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
   List<Widget> allPosts = [];
-  DataSnapshot numPosts;
+  late DataSnapshot numPosts;
   void getPosts() async {
     this.numPosts =
         await databaseReference.child('posts/' + widget.user).once();
@@ -36,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     getPosts();
+
     if (widget.visitor == widget.user) {
       setState(() {
         visitorIsUser = true;
@@ -54,6 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     following = 'Following';
                   })
                 : print('u are not following himm')
+            // ignore: unnecessary_statements
             : null;
       });
     }
@@ -63,12 +64,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child('user_details/' + widget.user).once(),
-      builder: (BuildContext context, AsyncSnapshot<DataSnapshot> snapshot) {
-        if (snapshot.hasData) {
+      builder: (BuildContext context, AsyncSnapshot? snapshot) {
+        if (snapshot!.hasData) {
           Map<dynamic, dynamic> values = snapshot.data.value;
           int flwing = values['following'].length - 1;
           int flwers = values['followers'].length - 1;
-          print(values['pfp']);
           return Scaffold(
             body: ListView(
               scrollDirection: Axis.vertical,
@@ -231,6 +231,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Container(
                           margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
                           height: 50.0,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
@@ -291,8 +292,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      gradColor1,
-                                      gradColor2,
+                                      gradColor1!,
+                                      gradColor2!,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -315,6 +316,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Container(
                           margin: EdgeInsets.fromLTRB(5, 10, 0, 15),
                           height: 70.0,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
@@ -340,7 +342,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   print('sheeeeeeeeeesh');
                                 });
                               });
-                              assert(neons != null);
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -383,9 +384,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 FutureBuilder(
                     future:
                         databaseReference.child('posts/' + widget.user).once(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DataSnapshot> _postssnapshot) {
-                      if (_postssnapshot.hasError) return Text("No posts yet!");
+                    builder:
+                        (BuildContext context, AsyncSnapshot? _postssnapshot) {
+                      if (_postssnapshot!.hasError)
+                        return Text("No posts yet!");
                       if (_postssnapshot.hasData) {
                         if (_postssnapshot.data.value != null) {
                           print('sheeeeeesh');

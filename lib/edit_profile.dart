@@ -1,7 +1,14 @@
 // ignore: unused_import
+import 'dart:io';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:main/home_page.dart';
+import 'package:uuid/uuid.dart';
 import 'widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:main/creds_database.dart';
 
 class PreEditProfile extends StatefulWidget {
   final String userName;
@@ -16,7 +23,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
-      builder: (context, _snapshot) {
+      builder: (context, AsyncSnapshot? _snapshot) {
         return Scaffold(
           appBar: AppBar(
             title: Text("Enter Passsword"),
@@ -34,7 +41,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send_rounded),
                   onPressed: () {
-                    _snapshot.data.value['pass'] == passController.text
+                    _snapshot!.data.value['pass'] == passController.text
                         ? Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -65,18 +72,31 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController confirmController = new TextEditingController();
   TextEditingController passController = new TextEditingController();
   TextEditingController mailController = new TextEditingController();
+  late DataSnapshot uDetails;
   bool samePass = true;
   bool passChanged = false;
   bool mailChanged = false;
+  late String url;
+  final uuid = Uuid();
+  void getDetails() async {
+    DataSnapshot y =
+        await databaseReference.child("user_details/" + widget.userName).once();
+    setState(() {
+      uDetails = y;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
-      builder: (context, _snapshot) {
-        if (_snapshot.hasData) {
+      builder: (context, AsyncSnapshot? _snapshot) {
+        if (_snapshot!.hasData) {
+          getDetails();
           this.mailController.text = _snapshot.data.value['mail'];
+          url = uDetails.value["pfp"];
 
+          if (url.isEmpty) print(url);
           //this.userController.text = _snapshot.data.key;
           return Scaffold(
             appBar: AppBar(
@@ -85,9 +105,30 @@ class _EditProfileState extends State<EditProfile> {
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.account_circle,
-                  size: 170,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    url.isEmpty
+                        ? Icon(
+                            Icons.account_circle,
+                            size: 170,
+                          )
+                        : ClipOval(
+                            child: Image.network(
+                              url,
+                              height: 170,
+                              width: 170,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        uploadImage(widget.userName);
+                      },
+                    )
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -193,6 +234,13 @@ class _EditProfileState extends State<EditProfile> {
                               "mail": this.mailController.text,
                               "pass": this.confirmController.text
                             });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    HomePage(widget.userName)),
+                          );
+                          return;
                         },
                       ),
                     ),
@@ -206,5 +254,45 @@ class _EditProfileState extends State<EditProfile> {
         }
       },
     );
+  }
+
+  void uploadImage(String user) async {
+    var postUrl;
+    final _imgpicker = ImagePicker();
+    late PickedFile? image;
+    final _storage = FirebaseStorage.instance;
+    image = await _imgpicker.getImage(
+      source: ImageSource.gallery,
+    );
+    //var file = File(image.path);
+
+    if (image != null) {
+      File? croppedImage = await ImageCropper.cropImage(
+        sourcePath: image.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressQuality: 50,
+        maxHeight: 1000,
+        maxWidth: 1000,
+        compressFormat: ImageCompressFormat.jpg,
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: "Crop",
+          toolbarColor: Colors.pink,
+          backgroundColor: Colors.black,
+          activeControlsWidgetColor: Colors.pink,
+          toolbarWidgetColor: Colors.white,
+        ),
+      );
+      //var llength = await _storage.ref().child('posts/' + user).list();
+
+      var snpsht = await _storage
+          .ref()
+          .child('pfp/' + user + '/' + this.uuid.v4())
+          .putFile(croppedImage!);
+      postUrl = await snpsht.ref.getDownloadURL();
+      databaseReference.child('user_details/' + user).update({"pfp": postUrl});
+    } else {
+      print("No path my man");
+    }
+    //return postUrl;
   }
 }

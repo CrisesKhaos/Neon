@@ -5,9 +5,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 final GoogleSignIn googleSignIn = new GoogleSignIn();
 
 Future<UserCredential> signInGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await GoogleSignIn().signIn();
+  final GoogleSignInAccount? googleSignInAccount =
+      await GoogleSignIn().signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+      await googleSignInAccount!.authentication;
   final AuthCredential credential = GoogleAuthProvider.credential(
     idToken: googleSignInAuthentication.idToken,
     accessToken: googleSignInAuthentication.accessToken,

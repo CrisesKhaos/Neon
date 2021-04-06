@@ -1,5 +1,6 @@
 import 'dart:async';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 
 import 'database.dart';
@@ -20,24 +21,22 @@ class Post {
 
   Future<String> uploadToDatabase() async {
     var id;
-    if (this.userName != null) {
-      /* DataSnapshot snapshot =
+    /* DataSnapshot snapshot =
           await reference.child('posts/' + this.userName).once();
       if (snapshot.value != null) {
         num = snapshot.value.numChildren();
         num += 1;
       } else
         num = 1;*/
-      id = databaseReference.child('posts/' + this.userName).push();
-      id.set({
-        'post': this.imageUrl,
-        'caption': this.caption,
-        'usersLiked': [],
-        'comments': [],
-        'hasliked': [],
-        'neon': []
-      });
-    }
+    id = databaseReference.child('posts/' + this.userName).push();
+    id.set({
+      'post': this.imageUrl,
+      'caption': this.caption,
+      'usersLiked': [],
+      'comments': [],
+      'hasliked': [],
+      'neon': []
+    });
 
     return id.key;
   }

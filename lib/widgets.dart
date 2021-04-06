@@ -57,6 +57,7 @@ void oneAlertBox(BuildContext context, String title) {
         return AlertDialog(
           title: Text(title),
           actions: <Widget>[
+            // ignore: deprecated_member_use
             FlatButton(
               child: Text("OK"),
               onPressed: () {

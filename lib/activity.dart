@@ -14,9 +14,10 @@ class _ActivityPageState extends State<ActivityPage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("activity/" + widget.user).once(),
-      builder: (context, _snapshot) {
-        if (_snapshot.hasData) {
+      builder: (context, AsyncSnapshot? _snapshot) {
+        if (_snapshot!.hasData) {
           Map<dynamic, dynamic> temp = _snapshot.data.value;
+          print(temp);
           List names = temp.keys.toList();
           _snapshot.data.value.forEach((key, value) {});
           return ListView.builder(
