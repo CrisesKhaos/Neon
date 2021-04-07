@@ -1,6 +1,10 @@
+// @dart=2.11
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:main/home_page.dart';
+import 'package:main/loading.dart';
 import 'sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,12 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Neon",
-      theme: ThemeData(
-          primaryColor: Colors.pink,
-          visualDensity: VisualDensity.adaptivePlatformDensity),
-      home: SignInPage(),
-    );
+        title: "Neon",
+        theme: ThemeData(
+            primaryColor: Colors.pink,
+            visualDensity: VisualDensity.adaptivePlatformDensity),
+        home: FirstScreen());
   }
 }
 

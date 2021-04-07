@@ -20,11 +20,11 @@ class _ProfilePageState extends State<ProfilePage> {
   var gradColor1 = Colors.pink[400];
   var gradColor2 = Colors.cyan[400];
   var following = 'Follow';
+  List<Widget> allPosts = [];
   bool visitorIsUser = false;
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
-  List<Widget> allPosts = [];
-  late DataSnapshot numPosts;
+  DataSnapshot numPosts;
   void getPosts() async {
     this.numPosts =
         await databaseReference.child('posts/' + widget.user).once();
@@ -64,8 +64,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child('user_details/' + widget.user).once(),
-      builder: (BuildContext context, AsyncSnapshot? snapshot) {
-        if (snapshot!.hasData) {
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
           Map<dynamic, dynamic> values = snapshot.data.value;
           int flwing = values['following'].length - 1;
           int flwers = values['followers'].length - 1;
@@ -292,8 +292,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      gradColor1!,
-                                      gradColor2!,
+                                      gradColor1,
+                                      gradColor2,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -385,9 +385,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     future:
                         databaseReference.child('posts/' + widget.user).once(),
                     builder:
-                        (BuildContext context, AsyncSnapshot? _postssnapshot) {
-                      if (_postssnapshot!.hasError)
-                        return Text("No posts yet!");
+                        (BuildContext context, AsyncSnapshot _postssnapshot) {
+                      if (_postssnapshot.hasError) return Text("No posts yet!");
                       if (_postssnapshot.hasData) {
                         if (_postssnapshot.data.value != null) {
                           print('sheeeeeesh');

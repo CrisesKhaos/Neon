@@ -22,9 +22,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool userAvailable = false;
   bool goodPass = false;
   bool goodmail = false;
-  late DatabaseReference userSnap;
+  DatabaseReference userSnap;
 
-  void giveError(var errorType, {String? type}) {
+  void giveError(var errorType, {String type}) {
     this.setState(() {
       if (type == "pass")
         passError = errorType;

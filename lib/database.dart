@@ -15,20 +15,24 @@ Future<List<Post>> returnpostList(String timelineUser) async {
   //Map<dynamic, dynamic> values = await dataSnapshot.value;
   //print(values);
 
-  dataSnapshot.value.forEach(
-    (key, value) async {
-      List postValues = value.split('(split)');
-      //var postPath = postValues[0] + '/'+ postValues[1];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach(
+      (key, _value) async {
+        print(_value);
+        List postValues = _value.split('(split)');
+        //var postPath = postValues[0] + '/'+ postValues[1];
+        DataSnapshot postSnapshot = await databaseReference
+            .child('posts/' + postValues[0] + "/" + postValues[1])
+            .once();
+        print(postSnapshot.value);
+        Post post =
+            createPost(postValues[0], postSnapshot.value, postValues[1]);
 
-      DataSnapshot postSnapshot = await databaseReference
-          .child('posts/' + postValues[0] + "/" + postValues[1])
-          .once();
-      print(postSnapshot.value);
-      Post post = createPost(postValues[0], postSnapshot.value, postValues[1]);
-
-      posts.add(post);
-    },
-  );
-
-  return posts;
+        posts.add(post);
+      },
+    );
+    print(posts);
+    print('yeeeeeeeet');
+    return posts;
+  }
 }

@@ -9,6 +9,10 @@
 
 > > put everything in one fututre
 
+miscelanious-
+
+> better navigation
+
 user profile page-
 
 > init state!!!!
@@ -41,6 +45,7 @@ sign in -
 
 done😀 -
 
+> //splash screen
 > //storage overlapping probably
 > //FutureBuilder
 > //slivers |no can do

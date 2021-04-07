@@ -20,7 +20,7 @@ class NewPostPage extends StatefulWidget {
 
 class _NewPostPageState extends State<NewPostPage> {
   final uuid = Uuid();
-  String? url;
+  String url;
   TextEditingController captioncont = new TextEditingController();
   final databaseReference = FirebaseDatabase.instance.reference();
   @override
@@ -48,7 +48,7 @@ class _NewPostPageState extends State<NewPostPage> {
               color: Colors.pinkAccent[50],
               child: Padding(
                 padding: EdgeInsets.all(4),
-                child: Image.network(url!),
+                child: Image.network(url),
               ),
               margin: EdgeInsets.fromLTRB(10, 10, 10, 20),
             )
@@ -69,7 +69,7 @@ class _NewPostPageState extends State<NewPostPage> {
             ),
             onPressed: () async {
               if (url != null) {
-                var post = new Post(widget.userName, url!, captioncont.text);
+                var post = new Post(widget.userName, url, captioncont.text);
                 var id = await post.uploadToDatabase();
                 List userFollowers = await getFollowers(widget.userName);
                 updateTimelines(userFollowers, id);
@@ -91,7 +91,7 @@ class _NewPostPageState extends State<NewPostPage> {
   void uploadImage(String user) async {
     var postUrl;
     final _imgpicker = ImagePicker();
-    late PickedFile? image;
+     PickedFile image;
     final _storage = FirebaseStorage.instance;
     image = await _imgpicker.getImage(
       source: ImageSource.gallery,
@@ -99,7 +99,7 @@ class _NewPostPageState extends State<NewPostPage> {
     //var file = File(image.path);
 
     if (image != null) {
-      File? croppedImage = await ImageCropper.cropImage(
+      File croppedImage = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
         compressQuality: 50,
@@ -119,7 +119,7 @@ class _NewPostPageState extends State<NewPostPage> {
       var snpsht = await _storage
           .ref()
           .child('posts/' + user + '/' + uuid.v4())
-          .putFile(croppedImage!);
+          .putFile(croppedImage);
       postUrl = await snpsht.ref.getDownloadURL();
       setState(() {
         url = postUrl;

@@ -20,11 +20,31 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  late String name;
+  String name;
   var userError;
   var passError;
+  String validatorString;
   TextEditingController userController = new TextEditingController();
   TextEditingController passController = new TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    getValidationData().then((value) {
+      setState(() {
+        this.validatorString = value;
+        print(value + "yeeet");
+        if (validatorString != null) toHomePage(validatorString);
+      });
+    });
+  }
+
+  Future<String> getValidationData() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var tempUsername = sharedPreferences.getString(("user"));
+    print(tempUsername.toString() + "yeeeeeeeeeeettt");
+    return tempUsername;
+  }
 
   void giveError(var errorType, {pass}) {
     this.setState(() {
@@ -106,6 +126,11 @@ class _BodyState extends State<Body> {
                   giveError("Enter a password", pass: true);
                 else if (await checkCredentials(
                     userController.text.toLowerCase(), passController.text)) {
+                  final SharedPreferences sharedPreferences =
+                      await SharedPreferences.getInstance();
+                  sharedPreferences.setString(
+                      ("user"), userController.text.toLowerCase());
+                  print(getValidationData());
                   toHomePage(userController.text);
                 } else {
                   oneAlertBox(context,
@@ -155,11 +180,11 @@ class _BodyState extends State<Body> {
             ),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30))),
-            borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]!),
+            borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]),
             highlightedBorderColor: Colors.pink,
             onPressed: () {
               // ignore: unused_local_variable
-              final SharedPreferences hi;
+
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => RegisterPage()));
             },

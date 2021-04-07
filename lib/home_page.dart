@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  late String text;
+  String text;
   int _currentIndex = 0;
   var cntlr = TextEditingController();
   List<Post> posts = [];
@@ -178,7 +178,6 @@ class PostListState extends State<PostList> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unnecessary_null_comparison
     if (widget.listItems != null)
       return Builder(builder: (context) {
         return ListView.builder(

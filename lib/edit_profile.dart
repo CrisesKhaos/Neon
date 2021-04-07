@@ -23,7 +23,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
-      builder: (context, AsyncSnapshot? _snapshot) {
+      builder: (context, AsyncSnapshot _snapshot) {
         return Scaffold(
           appBar: AppBar(
             title: Text("Enter Passsword"),
@@ -41,7 +41,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send_rounded),
                   onPressed: () {
-                    _snapshot!.data.value['pass'] == passController.text
+                    _snapshot.data.value['pass'] == passController.text
                         ? Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -72,11 +72,11 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController confirmController = new TextEditingController();
   TextEditingController passController = new TextEditingController();
   TextEditingController mailController = new TextEditingController();
-  late DataSnapshot uDetails;
+  DataSnapshot uDetails;
   bool samePass = true;
   bool passChanged = false;
   bool mailChanged = false;
-  late String url;
+  String url;
   final uuid = Uuid();
   void getDetails() async {
     DataSnapshot y =
@@ -90,8 +90,8 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
-      builder: (context, AsyncSnapshot? _snapshot) {
-        if (_snapshot!.hasData) {
+      builder: (context, AsyncSnapshot _snapshot) {
+        if (_snapshot.hasData) {
           getDetails();
           this.mailController.text = _snapshot.data.value['mail'];
           url = uDetails.value["pfp"];
@@ -259,7 +259,7 @@ class _EditProfileState extends State<EditProfile> {
   void uploadImage(String user) async {
     var postUrl;
     final _imgpicker = ImagePicker();
-    late PickedFile? image;
+    PickedFile image;
     final _storage = FirebaseStorage.instance;
     image = await _imgpicker.getImage(
       source: ImageSource.gallery,
@@ -267,7 +267,7 @@ class _EditProfileState extends State<EditProfile> {
     //var file = File(image.path);
 
     if (image != null) {
-      File? croppedImage = await ImageCropper.cropImage(
+      File croppedImage = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
         compressQuality: 50,
@@ -287,7 +287,7 @@ class _EditProfileState extends State<EditProfile> {
       var snpsht = await _storage
           .ref()
           .child('pfp/' + user + '/' + this.uuid.v4())
-          .putFile(croppedImage!);
+          .putFile(croppedImage);
       postUrl = await snpsht.ref.getDownloadURL();
       databaseReference.child('user_details/' + user).update({"pfp": postUrl});
     } else {

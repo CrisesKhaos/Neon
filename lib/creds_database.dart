@@ -1,5 +1,4 @@
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
