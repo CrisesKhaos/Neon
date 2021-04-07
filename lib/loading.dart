@@ -14,7 +14,6 @@ class _FirstScreenState extends State<FirstScreen> {
   Future<String> getValidationData() async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
-
     var tempUsername = sharedPreferences.getString(("user"));
     print(tempUsername.toString() + "yeeeeeeeeeeettt");
     return tempUsername;
@@ -27,7 +26,6 @@ class _FirstScreenState extends State<FirstScreen> {
     getValidationData().then((value) {
       setState(() {
         this.validatorString = value;
-        print(value + "yeeet");
         if (validatorString != null)
           Navigator.push(
               context,

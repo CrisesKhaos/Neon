@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:ui';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_database/firebase_database.dart';
-
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'database.dart';
+import 'neon.dart';
+import 'widgets.dart';
 
 final reference = FirebaseDatabase.instance.reference();
 
@@ -100,4 +103,75 @@ Post createPost(String userName, var value, var key) {
   post.hasLiked = new Set.from(attributes['hasLiked']);
   post.neon = new Set.from(attributes['neon']);
   return post;
+}
+
+Widget diplayPost(BuildContext context, Post post, String user) {
+  return Card(
+    elevation: 40,
+    shadowColor: Colors.pink[200],
+    child: Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Padding(
+              child: Icon(Icons.person),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            ),
+            Padding(
+              child: Text(post.userName),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            ),
+          ],
+        ),
+        Image.network(post.imageUrl),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.favorite),
+              onPressed: () {
+                post.likePost(user);
+              },
+              color: post.usersLiked.contains(user)
+                  ? Colors.redAccent[700]
+                  : Colors.black,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+              child: Text(
+                post.usersLiked.length.toString(),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            Spacer(),
+            IconButton(
+              alignment: Alignment.center,
+              icon: Icon(Icons.label_important_outline_rounded),
+              onPressed: () async {
+                Neon neon = new Neon(post.rand, post.userName, user);
+                await neon.monthExists()
+                    ? oneAlertBox(
+                        context, "You can Neon only One post per month!")
+                    : neon.toDatabase();
+              },
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                child: Text(
+                  post.userName,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                )),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+              child: Text(post.caption),
+            )
+          ],
+        )
+      ],
+    ),
+  );
 }

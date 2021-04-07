@@ -1,14 +1,19 @@
 // ignore: import_of_legacy_library_into_null_safe
+// ignore: unused_import
+import 'dart:convert';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/discover.dart';
 import 'package:main/neon.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'database.dart';
 import 'new_post.dart';
 import 'activity.dart';
 import 'post.dart';
+import 'sign_in.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
@@ -48,20 +53,48 @@ class HomePageState extends State<HomePage> {
         endDrawer: _currentIndex == 4
             ? Drawer(
                 elevation: 16.0,
-                child: ListView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     DrawerHeader(
                       child: Text(
                         'Hello, ' + widget.userName,
-                        style: TextStyle(fontSize: 25),
+                        style: TextStyle(fontSize: 50),
                       ),
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: NetworkImage(
                                 "https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
+                            scale: 3.0,
                             fit: BoxFit.fill),
                       ),
                     ),
+                    //Image.network(
+                    //"https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
+                    Spacer(),
+
+                    FlatButton(
+                      onPressed: () async {
+                        final SharedPreferences sharedPreferences =
+                            await SharedPreferences.getInstance();
+                        sharedPreferences.remove("user").then((value) {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignInPage()),
+                              (route) => false);
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            "Log Out",
+                          ),
+                          Spacer(),
+                          Icon(Icons.two_wheeler_outlined),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               )
