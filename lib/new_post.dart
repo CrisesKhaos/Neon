@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:main/widgets.dart';
@@ -26,6 +27,7 @@ class _NewPostPageState extends State<NewPostPage> {
   @override
   Widget build(BuildContext context) {
     if (url == null) uploadImage(widget.userName);
+    print(url);
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +93,7 @@ class _NewPostPageState extends State<NewPostPage> {
   void uploadImage(String user) async {
     var postUrl;
     final _imgpicker = ImagePicker();
-     PickedFile image;
+    PickedFile image;
     final _storage = FirebaseStorage.instance;
     image = await _imgpicker.getImage(
       source: ImageSource.gallery,
@@ -121,6 +123,7 @@ class _NewPostPageState extends State<NewPostPage> {
           .child('posts/' + user + '/' + uuid.v4())
           .putFile(croppedImage);
       postUrl = await snpsht.ref.getDownloadURL();
+      print(postUrl);
       setState(() {
         url = postUrl;
       });

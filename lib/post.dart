@@ -53,9 +53,8 @@ class Post {
   void likePost(String user) async {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
-    if (this.userName != user) {
-      hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
-    }
+
+    hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
   }
 
   void updateActivity(String liker, bool liked) async {
@@ -68,10 +67,14 @@ class Post {
     if (setTemp.value != null) {
       Map<dynamic, dynamic> actTemp = setTemp.value;
       actTemp.addAll({liker: "liked"});
-      await databaseReference.child("activity/" + this.userName).set(actTemp);
+      await databaseReference
+          .child("activity/" + this.userName)
+          .push()
+          .set(actTemp);
     } else {
       databaseReference
           .child("activity/" + this.userName)
+          .push()
           .set({liker: "liked"});
     }
   }
@@ -80,6 +83,7 @@ class Post {
 //creating this func to retrive the values fron the dtabse and store them in a list
 Post createPost(String userName, var value, var key) {
   //List<Post> posts = [];
+
   Map<String, dynamic> attributes = {
     'post': '',
     'caption': '',
@@ -98,80 +102,8 @@ Post createPost(String userName, var value, var key) {
     attributes["caption"],
     rand: key,
   );
-  print(post.usersLiked);
   post.usersLiked = new Set.from(attributes['usersLiked']);
   post.hasLiked = new Set.from(attributes['hasLiked']);
   post.neon = new Set.from(attributes['neon']);
   return post;
-}
-
-Widget diplayPost(BuildContext context, Post post, String user) {
-  return Card(
-    elevation: 40,
-    shadowColor: Colors.pink[200],
-    child: Column(
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Padding(
-              child: Icon(Icons.person),
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            ),
-            Padding(
-              child: Text(post.userName),
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            ),
-          ],
-        ),
-        Image.network(post.imageUrl),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.favorite),
-              onPressed: () {
-                post.likePost(user);
-              },
-              color: post.usersLiked.contains(user)
-                  ? Colors.redAccent[700]
-                  : Colors.black,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-              child: Text(
-                post.usersLiked.length.toString(),
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              alignment: Alignment.center,
-              icon: Icon(Icons.label_important_outline_rounded),
-              onPressed: () async {
-                Neon neon = new Neon(post.rand, post.userName, user);
-                await neon.monthExists()
-                    ? oneAlertBox(
-                        context, "You can Neon only One post per month!")
-                    : neon.toDatabase();
-              },
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                child: Text(
-                  post.userName,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                )),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-              child: Text(post.caption),
-            )
-          ],
-        )
-      ],
-    ),
-  );
 }

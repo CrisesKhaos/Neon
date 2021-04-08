@@ -32,7 +32,6 @@ class _BodyState extends State<Body> {
     getValidationData().then((value) {
       setState(() {
         this.validatorString = value;
-        print(value + "yeeet");
         if (validatorString != null) toHomePage(validatorString);
       });
     });
@@ -42,7 +41,6 @@ class _BodyState extends State<Body> {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var tempUsername = sharedPreferences.getString(("user"));
-    print(tempUsername.toString() + "yeeeeeeeeeeettt");
     return tempUsername;
   }
 

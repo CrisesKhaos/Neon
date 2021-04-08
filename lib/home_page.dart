@@ -6,10 +6,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/discover.dart';
 import 'package:main/neon.dart';
+import 'package:main/user_details.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'database.dart';
 import 'new_post.dart';
 import 'activity.dart';
 import 'post.dart';
@@ -30,16 +30,6 @@ class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   var cntlr = TextEditingController();
   List<Post> posts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    returnpostList(widget.userName).then((allposts) {
-      this.setState(() {
-        this.posts = allposts;
-      });
-    });
-  }
 
   @override
   void dispose() {
@@ -188,29 +178,226 @@ class HomePageState extends State<HomePage> {
                 ? DiscoverPage(widget.userName)
                 : _currentIndex == 3
                     ? ActivityPage(widget.userName)
-                    : PostList(this.posts, widget.userName));
+                    : PostList(widget.userName));
   }
 }
 
 class PostList extends StatefulWidget {
-  final List<Post> listItems;
+  //final List<Post> listItems;
   final String usertemp;
 
-  PostList(this.listItems, this.usertemp);
+  PostList(this.usertemp);
 
   @override
   PostListState createState() => PostListState();
 }
 
 class PostListState extends State<PostList> {
+  List<Post> timeline = [];
   void changelix(Function lix) {
     this.setState(() {
       lix();
     });
   }
 
+  Future<bool> isNeoned(Post post) async {
+    if (post.neon != null) {
+      if (post.neon.contains(widget.usertemp))
+        return true;
+      else
+        return false;
+    } else
+      return false;
+  }
+
+  Widget diplayPost(BuildContext context, Post post, String user) {
+    return Card(
+      elevation: 40,
+      shadowColor: Colors.pink[200],
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Padding(
+                child: Icon(Icons.person),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              ),
+              Padding(
+                child: Text(post.userName),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              ),
+            ],
+          ),
+          Image.network(post.imageUrl),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.favorite),
+                onPressed: () {
+                  this.changelix(() => post.likePost(widget.usertemp));
+                },
+                color: post.usersLiked.contains(user)
+                    ? Colors.redAccent[700]
+                    : Colors.black,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                child: Text(
+                  post.usersLiked.length.toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Spacer(),
+              IconButton(
+                alignment: Alignment.center,
+                icon: Icon(Icons.label_important_outline_rounded),
+                onPressed: () async {
+                  Neon neon = new Neon(post.rand, post.userName, user);
+                  await neon.monthExists()
+                      ? oneAlertBox(
+                          context, "You can Neon only One post per month!")
+                      : neon.toDatabase();
+                },
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                  child: Text(
+                    post.userName,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  )),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                child: Text(post.caption),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void hello() async {
+    DataSnapshot _snapshot =
+        await databaseReference.child('timelines/' + widget.usertemp).once();
+    List timeVals = _snapshot.value.values.toList();
+    timeVals.forEach((element) async {
+      List postValues = element.split('(split)');
+      DataSnapshot postSnapshot = await databaseReference
+          .child('posts/' + postValues[0] + "/" + postValues[1])
+          .once();
+      if (postSnapshot.value != null) {
+        Post tempPost =
+            createPost(postValues[0], postSnapshot.value, postSnapshot.key);
+        setState(() {
+          timeline.add(tempPost);
+        });
+
+        print('yeeeeet');
+        print(timeline);
+      } else
+        print("null");
+    });
+    print("null");
+    print(timeline);
+    print("null2");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    hello();
+    print('hello');
+  }
+
   @override
   Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: timeline.length,
+        itemBuilder: (context, index) {
+          Post post = timeline[index];
+          return Card(
+            elevation: 40,
+            shadowColor: Colors.pink[200],
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      child: Icon(Icons.person),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    ),
+                    Padding(
+                      child: Text(post.userName),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    ),
+                  ],
+                ),
+                Image.network(post.imageUrl),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.favorite),
+                      onPressed: () {
+                        this.changelix(() => post.likePost(widget.usertemp));
+                      },
+                      color: post.usersLiked.contains(widget.usertemp)
+                          ? Colors.redAccent[700]
+                          : Colors.black,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                      child: Text(
+                        post.usersLiked.length.toString(),
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      alignment: Alignment.center,
+                      icon: post.neon.contains(widget.usertemp)
+                          ? Icon(Icons.label_important_rounded)
+                          : Icon(Icons.label_important_outline_rounded),
+                      onPressed: () async {
+                        Neon neon =
+                            new Neon(post.rand, post.userName, widget.usertemp);
+                        await neon.monthExists()
+                            ? oneAlertBox(context,
+                                "You can Neon only One post per month!")
+                            : neon.toDatabase();
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                        child: Text(
+                          post.userName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                      child: Text(post.caption),
+                    )
+                  ],
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  /*
     if (widget.listItems != null)
       return Builder(builder: (context) {
         return ListView.builder(
@@ -298,6 +485,5 @@ class PostListState extends State<PostList> {
       return Text(
         'No posts yet ☹',
         textAlign: TextAlign.center,
-      );
-  }
+      );*/
 }
