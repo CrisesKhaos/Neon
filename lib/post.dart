@@ -1,12 +1,7 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'database.dart';
-import 'neon.dart';
-import 'widgets.dart';
 
 final reference = FirebaseDatabase.instance.reference();
 
@@ -62,21 +57,11 @@ class Post {
     databaseReference.child('posts/' + this.userName + "/" + this.rand).update(
       {'hasLiked': this.hasLiked.toList()},
     );
-    DataSnapshot setTemp =
-        await databaseReference.child("activity/" + this.userName).once();
-    if (setTemp.value != null) {
-      Map<dynamic, dynamic> actTemp = setTemp.value;
-      actTemp.addAll({liker: "liked"});
-      await databaseReference
-          .child("activity/" + this.userName)
-          .push()
-          .set(actTemp);
-    } else {
-      databaseReference
-          .child("activity/" + this.userName)
-          .push()
-          .set({liker: "liked"});
-    }
+    databaseReference.child("activity/" + this.userName).push().set({
+      "post": this.imageUrl,
+      "action": "liked",
+      "liker": liker,
+    });
   }
 }
 

@@ -32,7 +32,6 @@ Future<List<Post>> returnpostList(String timelineUser) async {
       },
     );
     print(posts);
-    print('yeeeeeeeet');
     return posts;
   }
 }

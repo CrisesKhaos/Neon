@@ -7,17 +7,17 @@
 > flare
 > route in main
 
-> > put everything in one fututre
-
 miscelanious-
 
 > better navigation
 
 user profile page-
 
-> init state!!!!
-> app bar
 > bottom in home page?
+
+neons -
+
+> when adding a neon confirm.
 
 posts -
 
@@ -45,16 +45,17 @@ sign in -
 
 done😀 -
 
-> //splash screen
-> //storage overlapping probably
-> //FutureBuilder
-> //slivers |no can do
-> //uplaoad image
-> //check if a valid username is entered
-> //chec password length
-> //chec if username is tacen
-> /?chec if correct username is enterd
-> //chec if correct pass is entered
-> //enter a valid username
-> //"Push genratates a random value my dude"
-> //read values
+> > //put everything in one fututre
+> > //splash screen
+> > //storage overlapping probably
+> > //FutureBuilder
+> > //slivers |no can do
+> > //uplaoad image
+> > //check if a valid username is entered
+> > //chec password length
+> > //chec if username is tacen
+> > /?chec if correct username is enterd
+> > //chec if correct pass is entered
+> > //enter a valid username
+> > //"Push genratates a random value my dude"
+> > //read values

@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/creds_database.dart';
 
@@ -10,6 +11,12 @@ class ActivityPage extends StatefulWidget {
 }
 
 class _ActivityPageState extends State<ActivityPage> {
+  Future<String> getPfp(String whos) async {
+    DataSnapshot x =
+        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    return x.value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -18,25 +25,46 @@ class _ActivityPageState extends State<ActivityPage> {
           if (_snapshot.hasData) {
             if (_snapshot.data.value != null) {
               Map<dynamic, dynamic> temp = _snapshot.data.value;
-              print(temp);
-              List names = temp.keys.toList();
-              _snapshot.data.value.forEach((key, value) {});
+              List<Map<dynamic, dynamic>> names = [];
+              temp.forEach((key, value) {
+                names.add(value);
+              });
               return ListView.builder(
-                itemCount: temp.keys.toList().length,
+                itemCount: names.length,
                 itemBuilder: (ctx, index) {
                   return Card(
                     margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
                     elevation: 5,
                     child: ListTile(
                       onTap: () {},
-                      leading: Icon(
-                        Icons.account_circle,
-                        size: 50,
+                      leading: FutureBuilder(
+                        future: getPfp(names[index]["liker"]),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.toString().isNotEmpty)
+                              return ClipOval(
+                                child: Image.network(
+                                  snapshot.data,
+                                  height: 35,
+                                  width: 35,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            else
+                              return Icon(
+                                Icons.account_circle,
+                                size: 40,
+                              );
+                          }
+                          return Container();
+                        },
                       ),
                       title: Text(
-                        names[index] + " liked your post",
+                        names[index]["liker"] + " liked your post",
                         style: TextStyle(fontSize: 20),
                       ),
+                      trailing: Image.network(names[index]["post"]),
                     ),
                   );
                 },

@@ -6,7 +6,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/discover.dart';
 import 'package:main/neon.dart';
-import 'package:main/user_details.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,6 +62,7 @@ class HomePageState extends State<HomePage> {
                     //"https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
                     Spacer(),
 
+                    // ignore: deprecated_member_use
                     FlatButton(
                       onPressed: () async {
                         final SharedPreferences sharedPreferences =
@@ -307,6 +307,12 @@ class PostListState extends State<PostList> {
     print("null2");
   }
 
+  Future<String> getPfp(String whos) async {
+    DataSnapshot x =
+        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    return x.value;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -320,6 +326,7 @@ class PostListState extends State<PostList> {
         itemCount: timeline.length,
         itemBuilder: (context, index) {
           Post post = timeline[index];
+
           return Card(
             elevation: 40,
             shadowColor: Colors.pink[200],
@@ -328,14 +335,36 @@ class PostListState extends State<PostList> {
                 Row(
                   children: <Widget>[
                     Padding(
-                      child: Icon(Icons.person),
+                      child: FutureBuilder(
+                        future: getPfp(post.userName),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.toString().isNotEmpty)
+                              return ClipOval(
+                                child: Image.network(
+                                  snapshot.data,
+                                  height: 30,
+                                  width: 30,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            else
+                              return Icon(
+                                Icons.account_circle,
+                                size: 170,
+                              );
+                          }
+                          return Container();
+                        },
+                      ),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     ),
                     Padding(
                       child: Text(post.userName),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     ),
                   ],
                 ),
@@ -365,14 +394,16 @@ class PostListState extends State<PostList> {
                       icon: post.neon.contains(widget.usertemp)
                           ? Icon(Icons.label_important_rounded)
                           : Icon(Icons.label_important_outline_rounded),
-                      onPressed: () async {
-                        Neon neon =
-                            new Neon(post.rand, post.userName, widget.usertemp);
-                        await neon.monthExists()
-                            ? oneAlertBox(context,
-                                "You can Neon only One post per month!")
-                            : neon.toDatabase();
-                      },
+                      onPressed: post.neon.contains(widget.usertemp)
+                          ? null
+                          : () async {
+                              Neon neon = new Neon(
+                                  post.rand, post.userName, widget.usertemp);
+                              await neon.monthExists()
+                                  ? oneAlertBox(context,
+                                      "You can Neon only one post per month!")
+                                  : neon.toDatabase();
+                            },
                     ),
                   ],
                 ),

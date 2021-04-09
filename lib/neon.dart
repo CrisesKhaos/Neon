@@ -27,7 +27,6 @@ class Neon {
     Set hello = tempPost.neon;
 
     hello.add(owner);
-    print(tempPost.neon);
     databaseReference.child('posts/' + this.user + "/" + this.post).update(
       {'neon': hello.toList()},
     );
@@ -53,11 +52,11 @@ class Neon {
   }
 
   void toDatabase() async {
-    /*databaseReference
+    databaseReference
         .child('Neons/' + owner)
         .child(DateTime.now().year.toString())
         .child(DateTime.now().month.toString())
-        .set({"post": this.post, "user": this.user});*/
+        .set({"post": this.post, "user": this.user});
     updatePost();
   }
 }
