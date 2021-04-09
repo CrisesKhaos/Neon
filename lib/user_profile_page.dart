@@ -70,39 +70,60 @@ class _ProfilePageState extends State<ProfilePage> {
           Map<dynamic, dynamic> values = snapshot.data.value;
           int flwing = values['following'].length - 1;
           int flwers = values['followers'].length - 1;
+          print(values["name"]);
           return Scaffold(
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
                 Column(
-                  verticalDirection: VerticalDirection.down,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                        padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            values["pfp"].toString().isEmpty
-                                ? Icon(
-                                    Icons.account_circle,
-                                    size: 170,
-                                  )
-                                : ClipOval(
-                                    child: Image.network(
-                                      values['pfp'],
-                                      height: 170,
-                                      width: 170,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                            /*Image.network(
-                              values['pfp'],
-                              height: 170,
-                              width: 170,
-                            )*/
-                          ],
-                        )),
+                      padding: EdgeInsets.fromLTRB(5, 8, 5, 8),
+                      child: Row(
+                        children: [
+                          values["pfp"].toString().isEmpty
+                              ? Icon(
+                                  Icons.account_circle,
+                                  size: 190,
+                                )
+                              : ClipOval(
+                                  child: Image.network(
+                                    values['pfp'],
+                                    height: 160,
+                                    width: 160,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
+                                child: Text(
+                                  values['name'],
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 25),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 15),
+                                child: Container(
+                                  constraints: new BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width -
+                                              200),
+                                  child: Text(
+                                    values['bio'],
+                                    softWrap: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

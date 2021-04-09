@@ -234,11 +234,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           passController.text,
                           mailController.text,
                           nameController.text);
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  HomePage(userController.text)));
+                                  HomePage(userController.text)),
+                          (route) => false);
                     } else if (!userAvailable)
                       oneAlertBox(context, 'Enter a valid username my man');
                     else if (!goodPass)

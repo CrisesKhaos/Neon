@@ -102,151 +102,154 @@ class _EditProfileState extends State<EditProfile> {
             appBar: AppBar(
               title: Text('Edit Profile'),
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    url.isEmpty
-                        ? Icon(
-                            Icons.account_circle,
-                            size: 170,
-                          )
-                        : ClipOval(
-                            child: Image.network(
-                              url,
-                              height: 170,
-                              width: 170,
-                              fit: BoxFit.cover,
+            body: Center(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      url.isEmpty
+                          ? Icon(
+                              Icons.account_circle,
+                              size: 170,
+                            )
+                          : ClipOval(
+                              child: Image.network(
+                                url,
+                                height: 170,
+                                width: 170,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        uploadImage(widget.userName);
-                      },
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    enabled: false,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 10, color: Colors.yellow)),
-                      labelText: _snapshot.data.key,
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          uploadImage(widget.userName);
+                        },
+                      )
+                    ],
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: this.mailController,
-                    //enabled: false,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.mail_outline),
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 10, color: Colors.yellow)),
-                      labelText: "E-mail",
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onChanged: (text) {
-                      if (text.trim() != _snapshot.data["mail"].trim())
-                        setState(() {
-                          passChanged = false;
-                        });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: this.passController,
-                    decoration: InputDecoration(
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      enabled: false,
+                      decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 10, color: Colors.yellow)),
-                        labelText: "New Password"),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: this.confirmController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 10, color: Colors.yellow)),
-                      labelText: "Confirm New Password",
-                      suffixIcon: confirmController.text.isNotEmpty
-                          ? samePass
-                              ? Icon(
-                                  Icons.check_circle_rounded,
-                                  color: Colors.green,
-                                )
-                              : Icon(
-                                  Icons.cancel_rounded,
-                                  color: Colors.red[800],
-                                )
-                          : null,
-                    ),
-                    onChanged: (text) {
-                      setState(() {
-                        passController.text == confirmController.text
-                            ? samePass = true
-                            : samePass = false;
-                      });
-                    },
-                  ),
-                ),
-                Row(
-                  children: [
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        child: Text("Confirm"),
-                        onPressed: () async {
-                          if (passController.text.isEmpty &&
-                              mailChanged == true)
-                            databaseReference
-                                .child("credentials/" + widget.userName)
-                                .update({
-                              "mail": this.mailController.text,
-                            });
-                          else if (passController.text.isNotEmpty &&
-                              samePass == false)
-                            oneAlertBox(context, "Your passwords do not match");
-                          else if (passController.text.isNotEmpty &&
-                              samePass == true)
-                            databaseReference
-                                .child("credentials/" + widget.userName)
-                                .update({
-                              "mail": this.mailController.text,
-                              "pass": this.confirmController.text
-                            });
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    HomePage(widget.userName)),
-                          );
-                          return;
-                        },
+                        labelText: _snapshot.data.key,
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                  ],
-                )
-              ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: this.mailController,
+                      //enabled: false,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.mail_outline),
+                        border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(width: 10, color: Colors.yellow)),
+                        labelText: "E-mail",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onChanged: (text) {
+                        if (text.trim() != _snapshot.data["mail"].trim())
+                          setState(() {
+                            passChanged = false;
+                          });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: this.passController,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.person_outline),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(width: 10, color: Colors.yellow)),
+                          labelText: "New Password"),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: this.confirmController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(width: 10, color: Colors.yellow)),
+                        labelText: "Confirm New Password",
+                        suffixIcon: confirmController.text.isNotEmpty
+                            ? samePass
+                                ? Icon(
+                                    Icons.check_circle_rounded,
+                                    color: Colors.green,
+                                  )
+                                : Icon(
+                                    Icons.cancel_rounded,
+                                    color: Colors.red[800],
+                                  )
+                            : null,
+                      ),
+                      onChanged: (text) {
+                        setState(() {
+                          passController.text == confirmController.text
+                              ? samePass = true
+                              : samePass = false;
+                        });
+                      },
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          child: Text("Confirm"),
+                          onPressed: () async {
+                            if (passController.text.isEmpty &&
+                                mailChanged == true)
+                              databaseReference
+                                  .child("credentials/" + widget.userName)
+                                  .update({
+                                "mail": this.mailController.text,
+                              });
+                            else if (passController.text.isNotEmpty &&
+                                samePass == false)
+                              oneAlertBox(
+                                  context, "Your passwords do not match");
+                            else if (passController.text.isNotEmpty &&
+                                samePass == true)
+                              databaseReference
+                                  .child("credentials/" + widget.userName)
+                                  .update({
+                                "mail": this.mailController.text,
+                                "pass": this.confirmController.text
+                              });
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        HomePage(widget.userName)),
+                                (route) => false);
+                            return;
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         } else {

@@ -7,13 +7,17 @@
 > flare
 > route in main
 
-miscelanious-
+user profile -
 
-> better navigation
+> set name and bio correctly
 
-user profile page-
+the faster the better -
 
-> bottom in home page?
+> add posts of a person he is bein to the follwer
+
+edit profile -
+
+> edit bio
 
 neons -
 
@@ -25,23 +29,17 @@ posts -
 
 home page -
 
-> list view
-> builder
-> circle avatar
-
 register -
 
 > trim
 > how to check if the user enter a $ or #
 > blur password
-> confirm password
 > chec if mail is taken
+> push and forget
 
 sign in -
 
-> wtf are tkens and stuff
 > remember me
-> stay logged in
 
 done😀 -
 
@@ -59,3 +57,9 @@ done😀 -
 > > //enter a valid username
 > > //"Push genratates a random value my dude"
 > > //read values
+> > // list view
+> > //builder
+> > // circle avatar
+> > // wtf are tkens and stuff
+> > stay logged in
+> > //confirm password

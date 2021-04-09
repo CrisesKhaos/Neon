@@ -74,11 +74,20 @@ class _ActivityPageState extends State<ActivityPage> {
               );
             } else
               return Center(
-                child: Text(
-                  "😔",
-                  style: TextStyle(
-                    fontSize: 100,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "😐",
+                      style: TextStyle(
+                        fontSize: 100,
+                      ),
+                    ),
+                    Text(
+                      "No activity yet",
+                      style: TextStyle(fontSize: 25),
+                    )
+                  ],
                 ),
               );
           } else
