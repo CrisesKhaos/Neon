@@ -48,8 +48,8 @@ class Post {
   void likePost(String user) async {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
-
-    hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
+    if (user != this.userName)
+      hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
   }
 
   void updateActivity(String liker, bool liked) async {

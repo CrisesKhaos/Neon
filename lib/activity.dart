@@ -64,7 +64,10 @@ class _ActivityPageState extends State<ActivityPage> {
                         names[index]["liker"] + " liked your post",
                         style: TextStyle(fontSize: 20),
                       ),
-                      trailing: Image.network(names[index]["post"]),
+                      trailing: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Image.network(names[index]["post"]),
+                      ),
                     ),
                   );
                 },

@@ -1,4 +1,3 @@
-
 import 'package:firebase_database/firebase_database.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
@@ -10,7 +9,7 @@ Map<String, dynamic> toJson(String user, String pass, String mail) {
   };
 }
 
-void registerUser(String userName, String pass, String mail) {
+void registerUser(String userName, String pass, String mail, String name) {
   databaseReference
       .child('credentials/' + userName)
       .set(toJson(userName, pass, mail));
@@ -19,6 +18,7 @@ void registerUser(String userName, String pass, String mail) {
     'following': [userName],
     'pfp': '',
     'bio': '',
+    'name': name,
   });
 }
 

@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:main/user_profile_page.dart';
@@ -109,4 +110,28 @@ bool containsSpecial(String value) {
     }
   }
   return rvalue;
+}
+
+String giveMonth(int num) {
+  const List<String> months = [
+    "January",
+    "Feburary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    'December'
+  ];
+  return months[num - 1];
+}
+
+Future<String> getPfp(String whos) async {
+  DataSnapshot x =
+      await databaseReference.child("user_details/" + whos + "/pfp").once();
+  return x.value;
 }

@@ -295,7 +295,7 @@ class PostListState extends State<PostList> {
             createPost(postValues[0], postSnapshot.value, postSnapshot.key);
         setState(() {
           timeline.add(tempPost);
-        });
+        }); 
 
         print('yeeeeet');
         print(timeline);
@@ -352,7 +352,7 @@ class PostListState extends State<PostList> {
                             else
                               return Icon(
                                 Icons.account_circle,
-                                size: 170,
+                                size: 32,
                               );
                           }
                           return Container();

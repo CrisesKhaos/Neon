@@ -24,17 +24,18 @@ class _ProfilePageState extends State<ProfilePage> {
   bool visitorIsUser = false;
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
-  DataSnapshot numPosts;
-  void getPosts() async {
-    this.numPosts =
+
+  Future<int> getPosts() async {
+    List x = [];
+    DataSnapshot temp =
         await databaseReference.child('posts/' + widget.user).once();
-    print(numPosts.value);
+    x.addAll(temp.value.keys);
+    return x.length;
   }
 
   @override
   void initState() {
     super.initState();
-    getPosts();
 
     if (widget.visitor == widget.user) {
       setState(() {
@@ -111,17 +112,27 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: Column(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                  child: Text(
-                                      numPosts.value == null
-                                          ? "0"
-                                          : numPosts.value.length.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 27,
-                                        color: Colors.white,
-                                      )),
-                                ),
+                                    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                    child: FutureBuilder(
+                                      future: getPosts(),
+                                      builder:
+                                          (context, AsyncSnapshot numPosts) {
+                                        if (numPosts.hasData) {
+                                          return Text(numPosts.data.toString(),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 27,
+                                                color: Colors.white,
+                                              ));
+                                        } else
+                                          return Text("0",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 27,
+                                                color: Colors.white,
+                                              ));
+                                      },
+                                    )),
                                 Padding(
                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
                                     child: Text(
@@ -326,10 +337,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   .child("Neons/" + widget.user)
                                   .once();
                               _neonsData.value.forEach((key, value) {
-                                print('hellooo');
                                 value.forEach((key, value) async {
-                                  print(value["user"]);
-                                  print(value['post']);
                                   DataSnapshot tempPostData =
                                       await databaseReference
                                           .child("posts/" + value["user"])
@@ -338,15 +346,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Post postTemp = createPost(value["user"],
                                       tempPostData.value, value['post']);
                                   neons.add(postTemp);
-                                  print(neons);
-                                  print('sheeeeeeeeeesh');
                                 });
                               });
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => NeonPage(
-                                        widget.user, widget.visitor, neons)),
+                                          widget.user,
+                                          widget.visitor,
+                                        )),
                               );
                             },
                             padding: EdgeInsets.all(0.0),
@@ -389,7 +397,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (_postssnapshot.hasError) return Text("No posts yet!");
                       if (_postssnapshot.hasData) {
                         if (_postssnapshot.data.value != null) {
-                          print('sheeeeeesh');
                           Map<dynamic, dynamic> userPosts =
                               _postssnapshot.data.value;
                           userPosts.forEach((key, value) {

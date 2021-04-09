@@ -4,6 +4,7 @@ import 'package:main/post.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
 
+// ignore: missing_return
 Future<List<Post>> returnpostList(String timelineUser) async {
   DataSnapshot dataSnapshot =
       await databaseReference.child('timelines/' + timelineUser).once();
