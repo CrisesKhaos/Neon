@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/edit_profile.dart';
 import 'package:main/widgets.dart';
-import 'post.dart';
 import 'neon.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
@@ -13,7 +12,8 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
   final String user;
   final String visitor;
-  ProfilePage(this.user, this.visitor);
+  final bool solo;
+  ProfilePage(this.user, this.visitor, {this.solo = false});
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -31,6 +31,18 @@ class _ProfilePageState extends State<ProfilePage> {
         await databaseReference.child('posts/' + widget.user).once();
     x.addAll(temp.value.keys);
     return x.length;
+  }
+
+  updateTimeline() async {
+    DataSnapshot x =
+        await databaseReference.child('posts/' + widget.user).once();
+    List hello = x.value.keys.toList();
+    hello.forEach((element) {
+      databaseReference
+          .child("timelines/" + widget.visitor)
+          .push()
+          .set(widget.user + '(split)' + element);
+    });
   }
 
   @override
@@ -72,6 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
           int flwers = values['followers'].length - 1;
           print(values["name"]);
           return Scaffold(
+            appBar: widget.solo ? AppBar(title: Text("@" + widget.user)) : null,
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
@@ -305,6 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     gradColor1 = Colors.teal[400];
                                     gradColor2 = Colors.tealAccent[400];
                                     following = 'Following';
+                                    updateTimeline();
                                   } else {
                                     gradColor1 = Colors.pink[400];
                                     gradColor2 = Colors.cyan[400];
@@ -353,22 +367,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
                             onPressed: () async {
-                              List<Post> neons = [];
-                              DataSnapshot _neonsData = await databaseReference
-                                  .child("Neons/" + widget.user)
-                                  .once();
-                              _neonsData.value.forEach((key, value) {
-                                value.forEach((key, value) async {
-                                  DataSnapshot tempPostData =
-                                      await databaseReference
-                                          .child("posts/" + value["user"])
-                                          .child(value['post'])
-                                          .once();
-                                  Post postTemp = createPost(value["user"],
-                                      tempPostData.value, value['post']);
-                                  neons.add(postTemp);
-                                });
-                              });
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(

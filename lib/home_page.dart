@@ -53,7 +53,8 @@ class HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: NetworkImage(
-                                "https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
+                              "https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg",
+                            ),
                             scale: 3.0,
                             fit: BoxFit.fill),
                       ),
@@ -316,9 +317,6 @@ class PostListState extends State<PostList> {
           setState(() {
             timeline.add(tempPost);
           });
-
-          print('yeeeeet');
-          print(timeline);
         } else
           print("null");
       });
@@ -335,7 +333,6 @@ class PostListState extends State<PostList> {
   void initState() {
     super.initState();
     hello();
-    print('hello');
   }
 
   @override
@@ -419,10 +416,18 @@ class PostListState extends State<PostList> {
                             : () async {
                                 Neon neon = new Neon(
                                     post.rand, post.userName, widget.usertemp);
-                                await neon.monthExists()
-                                    ? oneAlertBox(context,
-                                        "You can Neon only one post per month!")
-                                    : neon.toDatabase();
+                                if (await neon.monthExists())
+                                  oneAlertBox(context,
+                                      "You can Neon only one post per month!");
+                                else {
+                                  neon.toDatabase();
+                                  if (await neon.monthExists())
+                                    oneAlertBox(
+                                        context, "Neon added succesfully!");
+                                  else
+                                    oneAlertBox(
+                                        context, "Something went wrong! ");
+                                }
                               },
                       ),
                     ],

@@ -29,9 +29,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: ListView.builder(
-
         itemCount: _userDetails.length,
         itemBuilder: (context, index) {
           var shownUser = _userDetails[index];
@@ -45,8 +43,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          ProfilePage(shownUser.user, widget.currentUser)),
+                      builder: (context) => ProfilePage(
+                            shownUser.user,
+                            widget.currentUser,
+                            solo: true,
+                          )),
                 );
               },
               leading: Icon(

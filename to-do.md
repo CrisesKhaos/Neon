@@ -29,6 +29,8 @@ posts -
 
 home page -
 
+> text going outside screeen
+
 register -
 
 > trim
