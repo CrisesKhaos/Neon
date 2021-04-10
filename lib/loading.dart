@@ -27,13 +27,16 @@ class _FirstScreenState extends State<FirstScreen> {
       setState(() {
         this.validatorString = value;
         if (validatorString != null)
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => HomePage(validatorString)));
+                  builder: (context) => HomePage(validatorString)),
+              (route) => false);
         else
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => SignInPage()));
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => SignInPage()),
+              (route) => false);
       });
     });
   }

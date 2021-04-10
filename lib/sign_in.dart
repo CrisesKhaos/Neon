@@ -54,8 +54,10 @@ class _BodyState extends State<Body> {
   }
 
   void toHomePage(String username) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => HomePage(userController.text)));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(userController.text)),
+        (route) => false);
   }
 
   @override
@@ -128,7 +130,6 @@ class _BodyState extends State<Body> {
                       await SharedPreferences.getInstance();
                   sharedPreferences.setString(
                       ("user"), userController.text.toLowerCase());
-                  print(getValidationData());
                   toHomePage(userController.text);
                 } else {
                   oneAlertBox(context,
