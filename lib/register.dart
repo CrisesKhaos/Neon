@@ -238,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  HomePage(userController.text)),
+                                  HomePage(userController.text.toLowerCase())),
                           (route) => false);
                     } else if (!userAvailable)
                       oneAlertBox(context, 'Enter a valid username my man');

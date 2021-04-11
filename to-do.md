@@ -7,7 +7,11 @@
 > flare
 > route in main
 
-user profile -
+activity -
+
+> show neons and follow
+> poti horahi
+> user profile
 
 > set name and bio correctly
 
@@ -21,8 +25,6 @@ edit profile -
 
 neons -
 
-> when adding a neon confirm.
-
 posts -
 
 > comments
@@ -33,6 +35,7 @@ home page -
 
 register -
 
+> text poti kar rha hai
 > trim
 > how to check if the user enter a $ or #
 > blur password
@@ -65,3 +68,4 @@ done😀 -
 > > // wtf are tkens and stuff
 > > stay logged in
 > > //confirm password
+> > //when adding a neon confirm.

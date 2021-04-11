@@ -239,10 +239,6 @@ class PostListState extends State<PostList> {
           Row(
             children: <Widget>[
               Padding(
-                child: Icon(Icons.person),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              ),
-              Padding(
                 child: Text(post.userName),
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               ),
@@ -254,9 +250,7 @@ class PostListState extends State<PostList> {
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.favorite),
-                onPressed: () {
-                  this.changelix(() => post.likePost(widget.usertemp));
-                },
+                onPressed: () {},
                 color: post.usersLiked.contains(user)
                     ? Colors.redAccent[700]
                     : Colors.black,

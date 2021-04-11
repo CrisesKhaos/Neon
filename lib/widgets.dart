@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:main/user_profile_page.dart';
 
+import 'post.dart';
+
 //Widget diplayPost(Post post) {}
 
 class ListWithAppBar extends StatefulWidget {
@@ -66,6 +68,80 @@ void oneAlertBox(BuildContext context, String title) {
               },
             ),
           ],
+        );
+      });
+}
+
+void displayImage(BuildContext context, Post post, String tag) {
+  showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Hero(
+                  tag: tag,
+                  child: Card(
+                    elevation: 40,
+                    shadowColor: Colors.pink[200],
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              child: Text(post.userName),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                            ),
+                          ],
+                        ),
+                        Image.network(post.imageUrl),
+                        Row(
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.favorite),
+                              onPressed: () {},
+                              color: post.usersLiked.contains(post.userName)
+                                  ? Colors.redAccent[700]
+                                  : Colors.black,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 0, vertical: 5),
+                              child: Text(
+                                post.usersLiked.length.toString(),
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
+                                child: Text(
+                                  post.userName,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
+                                )),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                              child: Text(post.caption),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )),
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
         );
       });
 }
