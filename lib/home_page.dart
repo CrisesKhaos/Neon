@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:main/comments.dart';
 import 'package:main/discover.dart';
 import 'package:main/neon.dart';
 import 'package:main/user_profile_page.dart';
@@ -214,7 +215,6 @@ class PostList extends StatefulWidget {
 class PostListState extends State<PostList> {
   List<Post> timeline = [];
   bool hasPosts = true;
-  TextEditingController commentCont;
 
   void changelix(Function lix) {
     this.setState(() {
@@ -276,6 +276,7 @@ class PostListState extends State<PostList> {
           itemCount: timeline.length,
           itemBuilder: (context, index) {
             Post post = timeline[timeline.length - (1 + index)];
+            TextEditingController commentCont = new TextEditingController();
 
             return Container(
               decoration: post.neon.contains(widget.usertemp)
@@ -395,11 +396,11 @@ class PostListState extends State<PostList> {
                     Align(
                       alignment: Alignment.topLeft,
                       child: Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
                           child: RichText(
                             textAlign: TextAlign.left,
                             text: TextSpan(
-                              text: post.userName + " ",
+                              text: post.userName + "  ",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
@@ -413,6 +414,23 @@ class PostListState extends State<PostList> {
                             ),
                           )),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      child: GestureDetector(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("View comments"),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CommentsPage(post),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     TextField(
                       controller: commentCont,
                       decoration: InputDecoration(
@@ -425,9 +443,14 @@ class PostListState extends State<PostList> {
                             databaseReference
                                 .child(
                                     "posts/" + post.userName + "/" + post.rand)
-                                .child("comments")
-                                .update({widget.usertemp: commentCont.text});
+                                .child("comments/")
+                                .push()
+                                .set({
+                              "user": widget.usertemp,
+                              "comment": commentCont.text
+                            });
                             commentCont.clear();
+                            FocusScope.of(context).unfocus();
                           },
                         ),
                       ),

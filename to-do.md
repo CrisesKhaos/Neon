@@ -7,6 +7,10 @@
 > flare
 > route in main
 
+profile page -
+
+> enlarge pictures
+
 activity -
 
 > show neons and follow

@@ -146,6 +146,12 @@ void displayImage(BuildContext context, Post post, String tag) {
       });
 }
 
+Future<String> getPfp(String whos) async {
+  DataSnapshot x =
+      await databaseReference.child("user_details/" + whos + "/pfp").once();
+  return x.value;
+}
+
 bool containsSpecial(String value) {
   //var dumdum = new RegExp(r'[$#]');
 
@@ -204,10 +210,4 @@ String giveMonth(int num) {
     'December'
   ];
   return months[num - 1];
-}
-
-Future<String> getPfp(String whos) async {
-  DataSnapshot x =
-      await databaseReference.child("user_details/" + whos + "/pfp").once();
-  return x.value;
 }

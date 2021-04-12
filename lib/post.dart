@@ -90,7 +90,6 @@ Post createPost(String userName, var value, var key) {
   );
   post.usersLiked = new Set.from(attributes['usersLiked']);
   post.hasLiked = new Set.from(attributes['hasLiked']);
-  post.comments = new Set.from(attributes['comments']);
   post.neon = new Set.from(attributes['neon']);
   return post;
 }
