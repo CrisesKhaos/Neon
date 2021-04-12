@@ -145,10 +145,10 @@ class _NewPostPageState extends State<NewPostPage> {
 
   void updateTimelines(List followers, String id) {
     followers.forEach((tempFollower) {
-      databaseReference
-          .child('timelines/' + tempFollower)
-          .push()
-          .set(widget.userName + "(split)" + id);
+      databaseReference.child('timelines/' + tempFollower).push().set({
+        "post": widget.userName + "(split)" + id,
+        "time": DateTime.now().microsecondsSinceEpoch
+      });
     });
   }
 } //Class End

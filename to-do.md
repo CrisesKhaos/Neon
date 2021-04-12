@@ -31,6 +31,8 @@ posts -
 
 home page -
 
+> scrolls to the top
+> when username click go to user profile
 > text going outside screeen
 
 register -

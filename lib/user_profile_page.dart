@@ -33,8 +33,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<int> getPosts() async {
     List x = [];
-    DataSnapshot temp =
-        await databaseReference.child('posts/' + widget.user).once();
+    DataSnapshot temp = await databaseReference
+        .child('posts/' + widget.user)
+        .orderByKey()
+        .once();
     x.addAll(temp.value.keys);
     return x.length;
   }
@@ -491,8 +493,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 FutureBuilder(
-                    future:
-                        databaseReference.child('posts/' + widget.user).once(),
+                    future: databaseReference
+                        .child('posts/' + widget.user)
+                        .orderByChild("time")
+                        .once(),
                     builder:
                         (BuildContext context, AsyncSnapshot _postssnapshot) {
                       if (_postssnapshot.hasError) return Text("No posts yet!");
@@ -500,6 +504,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         if (_postssnapshot.data.value != null) {
                           Map<dynamic, dynamic> userPosts =
                               _postssnapshot.data.value;
+                          print(userPosts);
                           userPosts.forEach((key, value) {
                             allPosts.add(
                               GestureDetector(

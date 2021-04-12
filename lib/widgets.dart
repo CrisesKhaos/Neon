@@ -38,7 +38,7 @@ class _ListWithAppBarState extends State<ListWithAppBar> {
               style: TextStyle(fontSize: 20),
             ),
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProfilePage(shownUser, widget.visitor),

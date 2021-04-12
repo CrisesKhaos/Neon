@@ -214,6 +214,8 @@ class PostList extends StatefulWidget {
 class PostListState extends State<PostList> {
   List<Post> timeline = [];
   bool hasPosts = true;
+  TextEditingController commentCont;
+
   void changelix(Function lix) {
     this.setState(() {
       lix();
@@ -230,77 +232,15 @@ class PostListState extends State<PostList> {
       return false;
   }
 
-  Widget diplayPost(BuildContext context, Post post, String user) {
-    return Card(
-      elevation: 40,
-      shadowColor: Colors.pink[200],
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Padding(
-                child: Text(post.userName),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              ),
-            ],
-          ),
-          Image.network(post.imageUrl),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.favorite),
-                onPressed: () {},
-                color: post.usersLiked.contains(user)
-                    ? Colors.redAccent[700]
-                    : Colors.black,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                child: Text(
-                  post.usersLiked.length.toString(),
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Spacer(),
-              IconButton(
-                alignment: Alignment.center,
-                icon: Icon(Icons.label_important_outline_rounded),
-                onPressed: () async {
-                  Neon neon = new Neon(post.rand, post.userName, user);
-                  await neon.monthExists()
-                      ? oneAlertBox(
-                          context, "You can Neon only One post per month!")
-                      : neon.toDatabase();
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                  child: Text(
-                    post.userName,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  )),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                child: Text(post.caption),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
   void hello() async {
-    DataSnapshot _snapshot =
-        await databaseReference.child('timelines/' + widget.usertemp).once();
-    if (_snapshot.value != null) {
-      List timeVals = _snapshot.value.values.toList();
-      timeVals.forEach((element) async {
+    databaseReference
+        .child('timelines/' + widget.usertemp)
+        .orderByChild('time')
+        .onChildAdded
+        .listen(
+      (Event event) async {
+        print(event.snapshot.value);
+        String element = event.snapshot.value['post'];
         List postValues = element.split('(split)');
         DataSnapshot postSnapshot = await databaseReference
             .child('posts/' + postValues[0] + "/" + postValues[1])
@@ -313,8 +253,8 @@ class PostListState extends State<PostList> {
           });
         } else
           print("null");
-      });
-    }
+      },
+    );
   }
 
   Future<String> getPfp(String whos) async {
@@ -335,113 +275,165 @@ class PostListState extends State<PostList> {
       return ListView.builder(
           itemCount: timeline.length,
           itemBuilder: (context, index) {
-            Post post = timeline[index];
+            Post post = timeline[timeline.length - (1 + index)];
 
-            return Card(
-              elevation: 40,
-              shadowColor: Colors.pink[200],
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        child: FutureBuilder(
-                          future: getPfp(post.userName),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.toString().isNotEmpty)
-                                return ClipOval(
-                                  child: Image.network(
-                                    snapshot.data,
-                                    height: 30,
-                                    width: 30,
-                                    fit: BoxFit.cover,
-                                  ),
-                                );
-                              else
-                                return Icon(
-                                  Icons.account_circle,
-                                  size: 32,
-                                );
-                            }
-                            return Container();
+            return Container(
+              decoration: post.neon.contains(widget.usertemp)
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.pink[400],
+                    )
+                  : null,
+              child: Card(
+                elevation: 20,
+                shadowColor: Colors.pink[200],
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          child: FutureBuilder(
+                            future: getPfp(post.userName),
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data.toString().isNotEmpty)
+                                  return ClipOval(
+                                    child: Image.network(
+                                      snapshot.data,
+                                      height: 30,
+                                      width: 30,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                else
+                                  return Icon(
+                                    Icons.account_circle,
+                                    size: 32,
+                                  );
+                              }
+                              return Container();
+                            },
+                          ),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        ),
+                        Padding(
+                          child: Text(post.userName),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        ),
+                      ],
+                    ),
+                    Image.network(
+                      post.imageUrl,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.favorite),
+                          onPressed: () {
+                            this.changelix(
+                                () => post.likePost(widget.usertemp));
+                          },
+                          color: post.usersLiked.contains(widget.usertemp)
+                              ? Colors.redAccent[700]
+                              : Colors.black,
+                        ),
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                          child: Text(
+                            post.usersLiked.length.toString(),
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        Spacer(),
+                        IconButton(
+                          alignment: Alignment.center,
+                          icon: post.neon.contains(widget.usertemp)
+                              ? Icon(Icons.label_important_rounded)
+                              : Icon(Icons.label_important_outline_rounded),
+                          onPressed: post.neon.contains(widget.usertemp)
+                              ? null
+                              : () async {
+                                  Neon neon = new Neon(post.rand, post.userName,
+                                      widget.usertemp);
+                                  if (await neon.monthExists())
+                                    oneAlertBox(context,
+                                        "You can Neon only one post per month!");
+                                  else {
+                                    neon.toDatabase();
+                                    if (await neon.monthExists()) {
+                                      oneAlertBox(
+                                          context, "Neon added succesfully!");
+                                      post.neon.add(widget.usertemp);
+                                      setState(() {});
+                                    } else
+                                      oneAlertBox(
+                                          context, "Something went wrong! ");
+                                  }
+                                },
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          child: RichText(
+                            textAlign: TextAlign.left,
+                            text: TextSpan(
+                              text: post.userName + " ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                              children: [
+                                TextSpan(
+                                    text: post.caption,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                    ))
+                              ],
+                            ),
+                          )),
+                    ),
+                    TextField(
+                      controller: commentCont,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.message),
+                        labelText: "Username",
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.send),
+                          splashColor: Colors.pinkAccent[100],
+                          onPressed: () {
+                            databaseReference
+                                .child(
+                                    "posts/" + post.userName + "/" + post.rand)
+                                .child("comments")
+                                .update({widget.usertemp: commentCont.text});
+                            commentCont.clear();
                           },
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       ),
-                      Padding(
-                        child: Text(post.userName),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      ),
-                    ],
-                  ),
-                  Image.network(post.imageUrl),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.favorite),
-                        onPressed: () {
-                          this.changelix(() => post.likePost(widget.usertemp));
-                        },
-                        color: post.usersLiked.contains(widget.usertemp)
-                            ? Colors.redAccent[700]
-                            : Colors.black,
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                        child: Text(
-                          post.usersLiked.length.toString(),
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        alignment: Alignment.center,
-                        icon: post.neon.contains(widget.usertemp)
-                            ? Icon(Icons.label_important_rounded)
-                            : Icon(Icons.label_important_outline_rounded),
-                        onPressed: post.neon.contains(widget.usertemp)
-                            ? null
-                            : () async {
-                                Neon neon = new Neon(
-                                    post.rand, post.userName, widget.usertemp);
-                                if (await neon.monthExists())
-                                  oneAlertBox(context,
-                                      "You can Neon only one post per month!");
-                                else {
-                                  neon.toDatabase();
-                                  if (await neon.monthExists())
-                                    oneAlertBox(
-                                        context, "Neon added succesfully!");
-                                  else
-                                    oneAlertBox(
-                                        context, "Something went wrong! ");
-                                }
-                              },
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                          child: Text(
-                            post.userName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
-                          )),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                        child: Text(post.caption),
-                      )
-                    ],
-                  )
-                ],
+                    ),
+                  ],
+                ),
               ),
             );
           });
@@ -464,94 +456,4 @@ class PostListState extends State<PostList> {
         ),
       );
   }
-
-  /*
-    if (widget.listItems != null)
-      return Builder(builder: (context) {
-        return ListView.builder(
-          itemCount: this.widget.listItems.length,
-          itemBuilder: (context, index) {
-            var post = this.widget.listItems[index];
-
-            return Card(
-              elevation: 40,
-              shadowColor: Colors.pink[200],
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        child: Icon(Icons.person),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      ),
-                      Padding(
-                        child: Text(post.userName),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      ),
-                    ],
-                  ),
-                  Image.network(post.imageUrl),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.favorite),
-                        onPressed: () {
-                          this.changelix(() => post.likePost(widget.usertemp));
-                        },
-                        color: post.usersLiked.contains(widget.usertemp)
-                            ? Colors.redAccent[700]
-                            : Colors.black,
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                        child: Text(
-                          post.usersLiked.length.toString(),
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        alignment: Alignment.center,
-                        icon: Icon(Icons.label_important_outline_rounded),
-                        onPressed: () async {
-                          Neon neon = new Neon(
-                              post.rand, post.userName, widget.usertemp);
-                          await neon.monthExists()
-                              ? oneAlertBox(context,
-                                  "You can Neon only One post per month!")
-                              : neon.toDatabase();
-                        },
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                          child: Text(
-                            post.userName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
-                          )),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                        child: Text(post.caption),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            );
-          },
-        );
-      });
-    else
-      return Text(
-        'No posts yet ☹',
-        textAlign: TextAlign.center,
-      );*/
 }

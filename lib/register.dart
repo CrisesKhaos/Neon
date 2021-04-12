@@ -53,24 +53,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: TextField(
                     controller: userController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 5, color: Colors.yellow)),
-                      labelText: "USERNAME",
-                      suffixIcon: userController.text.isNotEmpty
-                          ? userAvailable
-                              ? Icon(
-                                  Icons.check_circle_rounded,
-                                  color: Colors.green,
-                                )
-                              : Icon(
-                                  Icons.cancel_rounded,
-                                  color: Colors.red[800],
-                                )
-                          : null,
-                      errorText: userError,
-                    ),
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(width: 5, color: Colors.yellow)),
+                        labelText: "USERNAME",
+                        suffixIcon: userController.text.isNotEmpty
+                            ? userAvailable
+                                ? Icon(
+                                    Icons.check_circle_rounded,
+                                    color: Colors.green,
+                                  )
+                                : Icon(
+                                    Icons.cancel_rounded,
+                                    color: Colors.red[800],
+                                  )
+                            : null,
+                        errorText: userError,
+                        errorMaxLines: 3),
                     onChanged: (text) {
                       //? wtf is happening here pls sendhelp
                       userSnap = databaseReference
@@ -149,12 +149,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: TextField(
                   controller: passController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 5, color: Colors.yellow)),
-                    labelText: "PASSWORD",
-                    errorText: passError,
-                  ),
+                      prefixIcon: Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(width: 5, color: Colors.yellow)),
+                      labelText: "PASSWORD",
+                      errorText: passError,
+                      errorMaxLines: 3),
                   onChanged: (text) {
                     if (text.length > 7 &&
                         text.contains(RegExp(r'[A-Z]')) &&
