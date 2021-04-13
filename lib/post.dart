@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:main/comments.dart';
 import 'database.dart';
 
 final reference = FirebaseDatabase.instance.reference();
@@ -10,9 +11,9 @@ class Post {
   final String userName;
   final String caption;
   Set usersLiked = {};
-  Set comments = {};
   Set hasLiked = {};
   Set neon = {};
+  List<Comment> comments = [];
   var rand;
   //DatabaseReference postRef = reference.child('posts/' + this.userName);
   Post(this.userName, this.imageUrl, this.caption, {this.rand});

@@ -1,6 +1,4 @@
 // ignore: import_of_legacy_library_into_null_safe
-// ignore: unused_import
-import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -248,6 +246,13 @@ class PostListState extends State<PostList> {
         if (postSnapshot.value != null) {
           Post tempPost =
               createPost(postValues[0], postSnapshot.value, postSnapshot.key);
+          if (postSnapshot.value['comments'] != null) {
+            postSnapshot.value["comments"].forEach((key, value) {
+              tempPost.comments
+                  .add(new Comment(value["user"], value['comment']));
+              tempPost.comments.reversed;
+            });
+          }
           setState(() {
             timeline.add(tempPost);
           });
@@ -414,12 +419,59 @@ class PostListState extends State<PostList> {
                             ),
                           )),
                     ),
+                    if (post.comments.isNotEmpty)
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                            padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            child: RichText(
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                text: post.comments[0].owner + "  ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                      text: post.comments[0].comment,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                      ))
+                                ],
+                              ),
+                            )),
+                      ),
+                    if (post.comments.length > 1)
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                            padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            child: RichText(
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                text: post.comments[1].owner + "  ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                      text: post.comments[1].comment,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                      ))
+                                ],
+                              ),
+                            )),
+                      ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                       child: GestureDetector(
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("View comments"),
+                          child: Text(
+                            "View comments",
+                            style: TextStyle(color: Colors.black38),
+                          ),
                         ),
                         onTap: () {
                           Navigator.push(
@@ -449,6 +501,9 @@ class PostListState extends State<PostList> {
                               "user": widget.usertemp,
                               "comment": commentCont.text
                             });
+                            post.comments.add(
+                                Comment(widget.usertemp, commentCont.text));
+                            setState(() {});
                             commentCont.clear();
                             FocusScope.of(context).unfocus();
                           },

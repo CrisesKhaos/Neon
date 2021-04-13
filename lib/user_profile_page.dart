@@ -90,22 +90,27 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                                  child: Text(
-                                    post.userName,
+                         Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                          child: RichText(
+                            textAlign: TextAlign.left,
+                            text: TextSpan(
+                              text: post.userName + "  ",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                              children: [
+                                TextSpan(
+                                    text: post.caption,
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15),
-                                  )),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                                child: Text(post.caption),
-                              )
-                            ],
-                          )
+                                      fontWeight: FontWeight.normal,
+                                    ))
+                              ],
+                            ),
+                          )),
+                    ),
                         ],
                       ),
                     )),
