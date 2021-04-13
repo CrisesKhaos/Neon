@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/comments.dart';
 import 'package:main/discover.dart';
+import 'package:main/message.dart';
 import 'package:main/neon.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
@@ -105,16 +106,22 @@ class HomePageState extends State<HomePage> {
                     : _currentIndex == 4
                         ? Icon(Icons.lock)
                         : null,
-                /*actions: _currentIndex == 0 || _currentIndex == 4
+                actions: _currentIndex == 0
                     ? [
                         _currentIndex == 0
                             ? IconButton(
                                 icon: Icon(Icons.send_rounded),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MessageListPage(
+                                              widget.userName)));
+                                },
                               )
                             : null
                       ]
-                    : null*/
+                    : null,
                 elevation: 20,
                 centerTitle: _currentIndex == 0 ? true : false,
                 title: Text(
@@ -489,25 +496,28 @@ class PostListState extends State<PostList> {
                         prefixIcon: Icon(Icons.message),
                         labelText: "Username",
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.send),
-                          splashColor: Colors.pinkAccent[100],
-                          onPressed: () {
-                            databaseReference
-                                .child(
-                                    "posts/" + post.userName + "/" + post.rand)
-                                .child("comments/")
-                                .push()
-                                .set({
-                              "user": widget.usertemp,
-                              "comment": commentCont.text
-                            });
-                            post.comments.add(
-                                Comment(widget.usertemp, commentCont.text));
-                            setState(() {});
-                            commentCont.clear();
-                            FocusScope.of(context).unfocus();
-                          },
-                        ),
+                            icon: Icon(Icons.send),
+                            splashColor: Colors.pinkAccent[100],
+                            onPressed: () {
+                              if (commentCont.text.isNotEmpty) {
+                                databaseReference
+                                    .child("posts/" +
+                                        post.userName +
+                                        "/" +
+                                        post.rand)
+                                    .child("comments/")
+                                    .push()
+                                    .set({
+                                  "user": widget.usertemp,
+                                  "comment": commentCont.text
+                                });
+                                post.comments.add(
+                                    Comment(widget.usertemp, commentCont.text));
+                                setState(() {});
+                                commentCont.clear();
+                              }
+                              FocusScope.of(context).unfocus();
+                            }),
                       ),
                     ),
                   ],

@@ -6,15 +6,16 @@
 > rest API
 > flare
 > route in main
+> about dialog
 
 profile page -
 
+> open container wtf
 > enlarge pictures
 
 activity -
 
 > show neons and follow
-> poti horahi
 > user profile
 
 > set name and bio correctly
@@ -75,3 +76,4 @@ done😀 -
 > > stay logged in
 > > //confirm password
 > > //when adding a neon confirm.
+> > // poti horahi
