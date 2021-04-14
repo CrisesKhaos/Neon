@@ -10,19 +10,15 @@
 
 profile page -
 
+> set name and bio correctly
 > open container wtf
-> enlarge pictures
 
 activity -
 
 > show neons and follow
 > user profile
 
-> set name and bio correctly
-
 the faster the better -
-
-> add posts of a person he is bein to the follwer
 
 edit profile -
 
@@ -51,10 +47,12 @@ register -
 
 sign in -
 
+> blur pass
 > remember me
 
 done😀 -
 
+> > // add posts of a person he is bein to the follwer
 > > //put everything in one fututre
 > > //splash screen
 > > //storage overlapping probably
@@ -73,7 +71,9 @@ done😀 -
 > > //builder
 > > // circle avatar
 > > // wtf are tkens and stuff
-> > stay logged in
+> > //stay logged in😀
 > > //confirm password
 > > //when adding a neon confirm.
 > > // poti horahi
+> > //enlarge pictures
+> > //enlarge pictures

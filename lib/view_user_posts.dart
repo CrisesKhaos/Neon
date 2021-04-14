@@ -1,224 +1,26 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:main/comments.dart';
-import 'package:main/discover.dart';
-import 'package:main/message.dart';
-import 'package:main/neon.dart';
-import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'new_post.dart';
-import 'activity.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'neon.dart';
 import 'post.dart';
-import 'sign_in.dart';
+import 'user_profile_page.dart';
 
-final databaseReference = FirebaseDatabase.instance.reference();
-
-class HomePage extends StatefulWidget {
-  final String userName;
-  final int tempcurrentIndex;
-
-  HomePage(this.userName, {this.tempcurrentIndex = 0});
-  HomePageState createState() => HomePageState();
-}
-
-class HomePageState extends State<HomePage> {
-  String text;
-  int _currentIndex = 0;
-  var cntlr = TextEditingController();
-  List<Post> posts = [];
-
-  @override
-  void dispose() {
-    super.dispose();
-    cntlr.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        endDrawer: _currentIndex == 4
-            ? Drawer(
-                elevation: 16.0,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    DrawerHeader(
-                      child: Text(
-                        'Hello, ' + widget.userName,
-                        style: TextStyle(fontSize: 50),
-                      ),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(
-                              "https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg",
-                            ),
-                            scale: 3.0,
-                            fit: BoxFit.fill),
-                      ),
-                    ),
-                    //Image.network(
-                    //"https://i.insider.com/59e4a9a2d4e920b4108b5560?width=1029&format=jpeg"),
-                    Spacer(),
-
-                    // ignore: deprecated_member_use
-                    FlatButton(
-                      onPressed: () async {
-                        final SharedPreferences sharedPreferences =
-                            await SharedPreferences.getInstance();
-                        sharedPreferences.remove("user").then((value) {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInPage()),
-                              (route) => false);
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          Text(
-                            "Log Out",
-                          ),
-                          Spacer(),
-                          Icon(Icons.two_wheeler_outlined),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
-            : null,
-        appBar: _currentIndex != 2
-            ? AppBar(
-                leading: _currentIndex == 0
-                    ? IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewPostPage(widget.userName)));
-                        },
-                      )
-                    : _currentIndex == 4
-                        ? Icon(Icons.lock)
-                        : null,
-                actions: _currentIndex == 0
-                    ? [
-                        _currentIndex == 0
-                            ? IconButton(
-                                icon: Icon(Icons.send_rounded),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MessageListPage(
-                                              widget.userName)));
-                                },
-                              )
-                            : null
-                      ]
-                    : null,
-                elevation: 20,
-                centerTitle: _currentIndex == 0 ? true : false,
-                title: Text(
-                  _currentIndex == 0
-                      ? "NEON"
-                      : _currentIndex == 1
-                          ? "Blips "
-                          : _currentIndex == 3
-                              ? "Activity"
-                              : widget.userName,
-                  style: TextStyle(fontSize: 25),
-                ),
-                backgroundColor: Colors.pink,
-              )
-            : null,
-
-        //?Bottom app bar starts
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _currentIndex,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.hourglass_empty_rounded),
-              activeIcon: Icon(Icons.hourglass_bottom_rounded),
-              label: "Blips",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: "Discover",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border_outlined),
-              activeIcon: Icon(
-                Icons.favorite,
-                color: Colors.red,
-              ),
-              label: "Activity",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: "Profile",
-            ),
-          ],
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
-
-        //?Body of the home page starts
-        body: _currentIndex == 4
-            ? ProfilePage(widget.userName, widget.userName)
-            : _currentIndex == 2
-                ? DiscoverPage(widget.userName)
-                : _currentIndex == 3
-                    ? ActivityPage(widget.userName)
-                    : _currentIndex == 1
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "👨‍🔧",
-                                  style: TextStyle(
-                                    fontSize: 100,
-                                  ),
-                                ),
-                                Text(
-                                  "Work Underway",
-                                  style: TextStyle(fontSize: 25),
-                                )
-                              ],
-                            ),
-                          )
-                        : PostList(widget.userName));
-  }
-}
-
-class PostList extends StatefulWidget {
-  //final List<Post> listItems;
+class UserPosts extends StatefulWidget {
   final String usertemp;
+  final int index;
 
-  PostList(this.usertemp);
-
+  UserPosts(this.usertemp, this.index);
   @override
-  PostListState createState() => PostListState();
+  _UserPostsState createState() => _UserPostsState();
 }
 
-class PostListState extends State<PostList> {
+class _UserPostsState extends State<UserPosts> {
   List<Post> timeline = [];
   bool hasPosts = true;
-
+  ItemScrollController _scrollController;
   void changelix(Function lix) {
     this.setState(() {
       lix();
@@ -237,33 +39,17 @@ class PostListState extends State<PostList> {
 
   void hello() async {
     databaseReference
-        .child('timelines/' + widget.usertemp)
+        .child('posts/' + widget.usertemp)
         .orderByChild('time')
         .onChildAdded
-        .listen(
-      (Event event) async {
-        String element = event.snapshot.value['post'];
-        List postValues = element.split('(split)');
-        DataSnapshot postSnapshot = await databaseReference
-            .child('posts/' + postValues[0] + "/" + postValues[1])
-            .once();
-        if (postSnapshot.value != null) {
-          Post tempPost =
-              createPost(postValues[0], postSnapshot.value, postSnapshot.key);
-          if (postSnapshot.value['comments'] != null) {
-            postSnapshot.value["comments"].forEach((key, value) {
-              tempPost.comments
-                  .add(new Comment(value["user"], value['comment']));
-              tempPost.comments.reversed;
-            });
-          }
-          setState(() {
-            timeline.add(tempPost);
-          });
-        } else
-          print("null");
-      },
-    );
+        .listen((Event event) async {
+      Post post =
+          createPost(widget.usertemp, event.snapshot.value, event.snapshot.key);
+
+      setState(() {
+        timeline.add(post);
+      });
+    });
   }
 
   Future<String> getPfp(String whos) async {
@@ -276,15 +62,36 @@ class PostListState extends State<PostList> {
   void initState() {
     super.initState();
     hello();
+    setState(() {
+      this.timeline = timeline.reversed.toList();
+    });
+    _scrollController = ItemScrollController();
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks)
+      setState(() {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollController
+            .scrollTo(index: widget.index, duration: Duration(seconds: 1)));
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (timeline.length != 0)
-      return ListView.builder(
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks)
+      setState(() {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollController
+            .scrollTo(index: widget.index, duration: Duration(seconds: 1)));
+      });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Posts"),
+      ),
+      body: ScrollablePositionedList.builder(
+          itemScrollController: _scrollController,
           itemCount: timeline.length,
           itemBuilder: (context, index) {
-            Post post = timeline[timeline.length - (1 + index)];
+            Post post = timeline[index];
             TextEditingController commentCont = new TextEditingController();
 
             return Container(
@@ -336,22 +143,25 @@ class PostListState extends State<PostList> {
                         ),
                       ],
                     ),
-                    Image.network(
-                      post.imageUrl,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                : null,
-                          ),
-                        );
-                      },
+                    Hero(
+                      tag: post.imageUrl,
+                      child: Image.network(
+                        post.imageUrl,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -523,24 +333,7 @@ class PostListState extends State<PostList> {
                 ),
               ),
             );
-          });
-    else
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "😔",
-              style: TextStyle(
-                fontSize: 100,
-              ),
-            ),
-            Text(
-              "No posts yet",
-              style: TextStyle(fontSize: 25),
-            )
-          ],
-        ),
-      );
+          }),
+    );
   }
 }

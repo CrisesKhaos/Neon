@@ -1,12 +1,21 @@
 // ignore: import_of_legacy_library_into_null_safe
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:main/edit_profile.dart';
 import 'package:main/post.dart';
+import 'package:main/view_user_posts.dart';
 import 'package:main/widgets.dart';
 import 'neon.dart';
 
 final databaseReference = FirebaseDatabase.instance.reference();
+
+//* pls send help i have no idea what i did but it works
+class UppImage {
+  final Map<dynamic, dynamic> values;
+  final String key;
+  UppImage(this.values, this.key);
+}
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -21,13 +30,27 @@ class _ProfilePageState extends State<ProfilePage> {
   var gradColor1 = Colors.pink[400];
   var gradColor2 = Colors.cyan[400];
   var following = 'Follow';
-  List<Widget> allPosts = [];
+  List<UppImage> allPosts = [];
   bool visitorIsUser = false;
   Set followersTemp = {};
   Set visitorfollowingTemp = {};
+
   void changelix(Function lix) {
     this.setState(() {
       lix();
+    });
+  }
+
+  void getPostsImages() async {
+    databaseReference
+        .child('posts/' + widget.user)
+        .orderByChild('time')
+        .onChildAdded
+        .listen((Event event) async {
+      if (!mounted) return;
+      setState(() {
+        allPosts.add(UppImage(event.snapshot.value, event.snapshot.key));
+      });
     });
   }
 
@@ -90,27 +113,27 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                         Align(
-                      alignment: Alignment.topLeft,
-                      child: Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
-                          child: RichText(
-                            textAlign: TextAlign.left,
-                            text: TextSpan(
-                              text: post.userName + "  ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                              children: [
-                                TextSpan(
-                                    text: post.caption,
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                                padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                child: RichText(
+                                  textAlign: TextAlign.left,
+                                  text: TextSpan(
+                                    text: post.userName + "  ",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                    ))
-                              ],
-                            ),
-                          )),
-                    ),
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                    children: [
+                                      TextSpan(
+                                          text: post.caption,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                          ))
+                                    ],
+                                  ),
+                                )),
+                          ),
                         ],
                       ),
                     )),
@@ -135,7 +158,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  @override
   void initState() {
     super.initState();
 
@@ -161,6 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
             : null;
       });
     }
+    getPostsImages();
   }
 
   @override
@@ -497,56 +520,40 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                FutureBuilder(
-                    future: databaseReference
-                        .child('posts/' + widget.user)
-                        .orderByChild("time")
-                        .once(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot _postssnapshot) {
-                      if (_postssnapshot.hasError) return Text("No posts yet!");
-                      if (_postssnapshot.hasData) {
-                        if (_postssnapshot.data.value != null) {
-                          Map<dynamic, dynamic> userPosts =
-                              _postssnapshot.data.value;
-                          print(userPosts);
-                          userPosts.forEach((key, value) {
-                            allPosts.add(
-                              GestureDetector(
-                                onTap: () {
-                                  Post post =
-                                      createPost(widget.user, value, key);
-                                  print("hi");
-                                  displayImage(context, post, value["post"]);
-                                },
-                                child: Hero(
-                                  tag: value["post"],
-                                  child: Image.network(
-                                    value["post"],
-                                    height: 100,
-                                    width: 100,
-                                  ),
-                                ),
-                              ),
-                            );
-                          });
-
-                          return GridView.count(
-                            physics: ScrollPhysics(),
-                            padding: EdgeInsets.only(top: 15),
-                            mainAxisSpacing: 7,
-                            crossAxisSpacing: 7,
-                            shrinkWrap: true,
-                            crossAxisCount: 3,
-                            children: allPosts,
-                          );
-                        } else {
-                          return Text("");
-                        }
-                      } else {
-                        return LinearProgressIndicator();
-                      }
-                    })
+                GridView.builder(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 150,
+                      mainAxisSpacing: 7,
+                      crossAxisSpacing: 7,
+                    ),
+                    itemCount: allPosts.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserPosts(widget.user, index)));
+                        },
+                        onLongPress: () {
+                          Post post = createPost(widget.user,
+                              allPosts[index].values, allPosts[index].key);
+                          displayImage(
+                              context, post, allPosts[index].values['post']);
+                        },
+                        child: Hero(
+                          tag: allPosts[index].values['post'],
+                          child: Image.network(
+                            allPosts[index].values['post'],
+                            height: 100,
+                            width: 100,
+                          ),
+                        ),
+                      );
+                    }),
               ],
             ),
           );
