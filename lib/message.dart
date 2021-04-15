@@ -22,19 +22,22 @@ class MessageListPage extends StatefulWidget {
 class _MessageListPageState extends State<MessageListPage> {
   List users = [];
   List extra = [];
-  int messages = 0;
+
   getList() async {
     DataSnapshot list =
         await databaseReference.child("messages/" + widget.user).once();
     if (list.value != null) {
-      list.value.forEach((key, value) {
-        print(key);
+      databaseReference
+          .child("messages/" + widget.user)
+          .orderByChild('time')
+          .onChildAdded
+          .listen((Event event) async {
         setState(() {
-          messages++;
-          this.users.add(key);
+          this.users.add(event.snapshot.key);
         });
       });
     }
+
     DataSnapshot data = await databaseReference
         .child("user_details/" + widget.user)
         .child("following")
@@ -196,7 +199,6 @@ class _MessagePageState extends State<MessagePage> {
     }).onError((e) {
       print(e + "yeeeeeeeeet");
     });
-    print("hiiiiiiiiii");
   }
 
   @override
@@ -264,7 +266,7 @@ class _MessagePageState extends State<MessagePage> {
                           .child(
                               "messages/" + widget.user + "/" + widget.toWhom)
                           .update(
-                              {"time": DateTime.now().microsecondsSinceEpoch});
+                              {"time": -DateTime.now().microsecondsSinceEpoch});
                       await databaseReference
                           .child(
                               "messages/" + widget.user + "/" + widget.toWhom)
@@ -287,7 +289,7 @@ class _MessagePageState extends State<MessagePage> {
                           .child(
                               "messages/" + widget.toWhom + "/" + widget.user)
                           .update(
-                              {"time": DateTime.now().microsecondsSinceEpoch});
+                              {"time": -DateTime.now().microsecondsSinceEpoch});
                     }
 
                     mainCont.clear();

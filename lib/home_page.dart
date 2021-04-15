@@ -242,7 +242,7 @@ class PostListState extends State<PostList> {
         .onChildAdded
         .listen(
       (Event event) async {
-        String element = event.snapshot.value['post'];
+        String element = event.snapshot.value['post'].toString();
         List postValues = element.split('(split)');
         DataSnapshot postSnapshot = await databaseReference
             .child('posts/' + postValues[0] + "/" + postValues[1])
@@ -384,13 +384,14 @@ class PostListState extends State<PostList> {
                               ? null
                               : () async {
                                   Neon neon = new Neon(post.rand, post.userName,
-                                      widget.usertemp);
+                                      widget.usertemp, post.imageUrl);
                                   if (await neon.monthExists())
                                     oneAlertBox(context,
                                         "You can Neon only one post per month!");
                                   else {
                                     neon.toDatabase();
                                     if (await neon.monthExists()) {
+                                      neon.updateActivty();
                                       oneAlertBox(
                                           context, "Neon added succesfully!");
                                       post.neon.add(widget.usertemp);
@@ -512,6 +513,18 @@ class PostListState extends State<PostList> {
                                 });
                                 post.comments.add(
                                     Comment(widget.usertemp, commentCont.text));
+                                if (widget.usertemp != post.userName)
+                                  databaseReference
+                                      .child("activity/" + post.userName)
+                                      .push()
+                                      .set({
+                                    "post": post.imageUrl,
+                                    "comment": commentCont.text,
+                                    "action": "comment",
+                                    "user": widget.usertemp,
+                                    "time":
+                                        DateTime.now().microsecondsSinceEpoch
+                                  });
                                 setState(() {});
                                 commentCont.clear();
                               }

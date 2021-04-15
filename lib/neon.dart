@@ -5,12 +5,13 @@ import 'home_page.dart';
 import 'widgets.dart';
 
 class Neon {
+  final String imgUrl;
   final String post;
   //user the owner of the post which is being neoned
   final String user;
   //Owner is the person who is neoning the post
   final String owner;
-  Neon(this.post, this.user, this.owner);
+  Neon(this.post, this.user, this.owner, this.imgUrl);
   Future<bool> monthExists() async {
     DataSnapshot neon = await databaseReference
         .child('Neons/' + owner)
@@ -49,6 +50,15 @@ class Neon {
             .update({"neon": temp.toList()});
       }
     });*/
+  }
+
+  void updateActivty() async {
+    databaseReference.child('activity/' + this.user).push().set({
+      "post": this.imgUrl,
+      "action": "neon",
+      "user": this.owner,
+      "time": DateTime.now().microsecondsSinceEpoch
+    });
   }
 
   void toDatabase() async {
@@ -215,8 +225,11 @@ class _NeonPageState extends State<NeonPage> {
                             onPressed: post.neon.contains(widget.visitor)
                                 ? null
                                 : () async {
-                                    Neon neon = new Neon(post.rand,
-                                        post.userName, widget.visitor);
+                                    Neon neon = new Neon(
+                                        post.rand,
+                                        post.userName,
+                                        widget.visitor,
+                                        post.imageUrl);
                                     await neon.monthExists()
                                         ? oneAlertBox(context,
                                             "You can Neon only one post per month!")

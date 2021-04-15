@@ -430,6 +430,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                     gradColor1 = Colors.teal[400];
                                     gradColor2 = Colors.tealAccent[400];
                                     following = 'Following';
+                                    databaseReference
+                                        .child('activity/' + widget.user)
+                                        .push()
+                                        .set({
+                                      "action": "following",
+                                      "user": widget.visitor,
+                                      "time":
+                                          DateTime.now().microsecondsSinceEpoch
+                                    });
                                     updateTimeline();
                                   } else {
                                     gradColor1 = Colors.pink[400];
@@ -535,8 +544,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      UserPosts(widget.user, index)));
+                                  builder: (context) => UserPosts(
+                                      widget.user, widget.visitor, index)));
                         },
                         onLongPress: () {
                           Post post = createPost(widget.user,

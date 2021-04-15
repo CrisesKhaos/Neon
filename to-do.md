@@ -26,6 +26,8 @@ edit profile -
 
 neons -
 
+> can neon your own post.
+
 posts -
 
 > comments

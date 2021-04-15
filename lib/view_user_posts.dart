@@ -11,8 +11,9 @@ import 'user_profile_page.dart';
 class UserPosts extends StatefulWidget {
   final String usertemp;
   final int index;
+  final String whos;
 
-  UserPosts(this.usertemp, this.index);
+  UserPosts(this.whos, this.usertemp, this.index);
   @override
   _UserPostsState createState() => _UserPostsState();
 }
@@ -39,12 +40,12 @@ class _UserPostsState extends State<UserPosts> {
 
   void hello() async {
     databaseReference
-        .child('posts/' + widget.usertemp)
+        .child('posts/' + widget.whos)
         .orderByChild('time')
         .onChildAdded
         .listen((Event event) async {
       Post post =
-          createPost(widget.usertemp, event.snapshot.value, event.snapshot.key);
+          createPost(widget.whos, event.snapshot.value, event.snapshot.key);
 
       setState(() {
         timeline.add(post);
@@ -194,13 +195,14 @@ class _UserPostsState extends State<UserPosts> {
                               ? null
                               : () async {
                                   Neon neon = new Neon(post.rand, post.userName,
-                                      widget.usertemp);
+                                      widget.usertemp, post.imageUrl);
                                   if (await neon.monthExists())
                                     oneAlertBox(context,
                                         "You can Neon only one post per month!");
                                   else {
                                     neon.toDatabase();
                                     if (await neon.monthExists()) {
+                                      neon.updateActivty();
                                       oneAlertBox(
                                           context, "Neon added succesfully!");
                                       post.neon.add(widget.usertemp);
@@ -322,6 +324,15 @@ class _UserPostsState extends State<UserPosts> {
                                 });
                                 post.comments.add(
                                     Comment(widget.usertemp, commentCont.text));
+                                databaseReference
+                                    .child("activty/" + post.userName)
+                                    .push()
+                                    .set({
+                                  "post": post.imageUrl,
+                                  "action": "comment",
+                                  "user": widget.usertemp,
+                                  "time": DateTime.now().microsecondsSinceEpoch
+                                });
                                 setState(() {});
                                 commentCont.clear();
                               }

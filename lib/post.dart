@@ -51,10 +51,10 @@ class Post {
     usersLiked.contains(user) ? usersLiked.remove(user) : usersLiked.add(user);
     updateLix(user);
     if (user != this.userName)
-      hasLiked.contains(user) ? print('ho') : updateActivity(user, true);
+      hasLiked.contains(user) ? print('ho') : updateActivity(user, 'liked');
   }
 
-  void updateActivity(String liker, bool liked) async {
+  void updateActivity(String liker, String action) async {
     hasLiked.add(liker);
     databaseReference.child('posts/' + this.userName + "/" + this.rand).update(
       {'hasLiked': this.hasLiked.toList()},
@@ -62,7 +62,8 @@ class Post {
     databaseReference.child("activity/" + this.userName).push().set({
       "post": this.imageUrl,
       "action": "liked",
-      "liker": liker,
+      "user": liker,
+      "time": DateTime.now().microsecondsSinceEpoch
     });
   }
 }
