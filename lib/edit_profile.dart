@@ -87,12 +87,17 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: databaseReference.child("credentials/" + widget.userName).once(),
       builder: (context, AsyncSnapshot _snapshot) {
         if (_snapshot.hasData) {
-          getDetails();
           this.mailController.text = _snapshot.data.value['mail'];
           url = uDetails.value["pfp"];
 

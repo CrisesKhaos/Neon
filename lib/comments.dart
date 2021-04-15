@@ -13,6 +13,7 @@ class Comment {
 class CommentsPage extends StatefulWidget {
   final Post post;
   final String user;
+  //user is the person visiting
   CommentsPage(this.post, this.user);
   @override
   _CommentsPageState createState() => _CommentsPageState();
@@ -56,7 +57,7 @@ class _CommentsPageState extends State<CommentsPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: this.comments.length,
+              itemCount: this.comments.length + 1,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: FutureBuilder(

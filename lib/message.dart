@@ -20,7 +20,10 @@ class MessageListPage extends StatefulWidget {
 }
 
 class _MessageListPageState extends State<MessageListPage> {
+  //!turn this into a class
   List users = [];
+  List<int> unseen = [];
+  List lastMessages = [];
   List extra = [];
 
   getList() async {
@@ -32,8 +35,11 @@ class _MessageListPageState extends State<MessageListPage> {
           .orderByChild('time')
           .onChildAdded
           .listen((Event event) async {
+        if (!mounted) return;
         setState(() {
+          this.unseen.add(event.snapshot.value['unseen']);
           this.users.add(event.snapshot.key);
+          this.lastMessages.add(event.snapshot.value['last']);
         });
       });
     }
@@ -48,7 +54,6 @@ class _MessageListPageState extends State<MessageListPage> {
           this.extra.add(value);
         });
     });
-    print(extra);
   }
 
   @override
@@ -57,7 +62,6 @@ class _MessageListPageState extends State<MessageListPage> {
     getList();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -73,39 +77,67 @@ class _MessageListPageState extends State<MessageListPage> {
         itemBuilder: (context, index) {
           if (index < users.length)
             return ListTile(
-                leading: FutureBuilder(
-                  future: getPfp(users[index]),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.toString().isNotEmpty)
-                        return ClipOval(
-                          child: Image.network(
-                            snapshot.data,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.cover,
+              leading: FutureBuilder(
+                future: getPfp(users[index]),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.toString().isNotEmpty)
+                      return ClipOval(
+                        child: Image.network(
+                          snapshot.data,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    else
+                      return Icon(
+                        Icons.account_circle,
+                        size: 40,
+                      );
+                  }
+                  return CircularProgressIndicator();
+                },
+              ),
+              title: Text(
+                users[index],
+                style: TextStyle(fontSize: 20),
+              ),
+              onTap: () async {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          MessagePage(widget.user, users[index])),
+                );
+              },
+              trailing: unseen[index] != 0
+                  ? Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 15,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.pink,
+                              Colors.purple,
+                            ],
                           ),
-                        );
-                      else
-                        return Icon(
-                          Icons.account_circle,
-                          size: 40,
-                        );
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-                title: Text(
-                  users[index],
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              MessagePage(widget.user, users[index])));
-                });
+                          color: Colors.blueGrey),
+                      child: Text(
+                        unseen[index].toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ))
+                  : null,
+              subtitle: Text(
+                lastMessages[index],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
           else if (index == users.length && extra.length != 0)
             return Container(
               height: MediaQuery.of(context).size.height / 12,
@@ -172,6 +204,7 @@ class _MessageListPageState extends State<MessageListPage> {
   }
 }
 
+//? The second page starts *actual chats
 class MessagePage extends StatefulWidget {
   final String user;
   final String toWhom;
@@ -194,6 +227,7 @@ class _MessagePageState extends State<MessagePage> {
       Map chat = event.snapshot.value;
       Message msg = Message(chat["user"], chat["message"]);
       setState(() {
+        virgin = false;
         chats.add(msg);
       });
     }).onError((e) {
@@ -209,9 +243,44 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!virgin)
+      databaseReference
+          .child("messages/" + widget.user + "/" + widget.toWhom)
+          .update({'unseen': 0});
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.toWhom),
+        leadingWidth: 35,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: FutureBuilder(
+                future: getPfp(widget.toWhom),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.toString().isNotEmpty)
+                      return ClipOval(
+                        child: Image.network(
+                          snapshot.data,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    else
+                      return Icon(
+                        Icons.account_circle,
+                        size: 30,
+                      );
+                  }
+                  return Container();
+                },
+              ),
+            ),
+            Text(widget.toWhom),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -262,11 +331,16 @@ class _MessagePageState extends State<MessagePage> {
                   splashColor: Colors.pinkAccent[100],
                   onPressed: () async {
                     if (mainCont.text.isNotEmpty) {
+                      //* updating the time of the last msg sent so it can be sorted
+                      //*and also the last message
+                      //? of to whom
                       await databaseReference
                           .child(
                               "messages/" + widget.user + "/" + widget.toWhom)
-                          .update(
-                              {"time": -DateTime.now().microsecondsSinceEpoch});
+                          .update({
+                        "last": mainCont.text,
+                        "time": -DateTime.now().microsecondsSinceEpoch,
+                      });
                       await databaseReference
                           .child(
                               "messages/" + widget.user + "/" + widget.toWhom)
@@ -274,7 +348,7 @@ class _MessagePageState extends State<MessagePage> {
                           .set({
                         "user": widget.user,
                         "message": mainCont.text,
-                        "time": DateTime.now().millisecondsSinceEpoch
+                        "time": DateTime.now().millisecondsSinceEpoch,
                       });
                       await databaseReference
                           .child(
@@ -285,11 +359,20 @@ class _MessagePageState extends State<MessagePage> {
                         "message": mainCont.text,
                         "time": DateTime.now().millisecondsSinceEpoch
                       });
+
+                      //* updating the time of the last msg sent so it can be sorted
+                      //*and also the last message
+                      //? of to whom
+                      //? and also its unseen meassages so proper can be displayed
+                      //
                       await databaseReference
                           .child(
                               "messages/" + widget.toWhom + "/" + widget.user)
-                          .update(
-                              {"time": -DateTime.now().microsecondsSinceEpoch});
+                          .update({
+                        "time": -DateTime.now().microsecondsSinceEpoch,
+                        "last": mainCont.text,
+                        'unseen': ServerValue.increment(1)
+                      });
                     }
 
                     mainCont.clear();

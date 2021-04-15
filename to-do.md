@@ -8,6 +8,10 @@
 > route in main
 > about dialog
 
+messages -
+
+> check for time and unseen
+
 profile page -
 
 > set name and bio correctly
@@ -15,8 +19,8 @@ profile page -
 
 activity -
 
-> show neons and follow
 > user profile
+> on tapping go to post
 
 the faster the better -
 
@@ -26,7 +30,7 @@ edit profile -
 
 neons -
 
-> can neon your own post.
+> can never neon your own post.
 
 posts -
 
@@ -45,7 +49,6 @@ register -
 > how to check if the user enter a $ or #
 > blur password
 > chec if mail is taken
-> push and forget
 
 sign in -
 
@@ -79,3 +82,5 @@ done😀 -
 > > // poti horahi
 > > //enlarge pictures
 > > //enlarge pictures
+> > //push and forget
+> > //show neons and follow

@@ -38,10 +38,14 @@ class _ListWithAppBarState extends State<ListWithAppBar> {
               style: TextStyle(fontSize: 20),
             ),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfilePage(shownUser, widget.visitor),
+                  builder: (context) => ProfilePage(
+                    shownUser,
+                    widget.visitor,
+                    solo: true,
+                  ),
                 ),
               );
             },
@@ -50,6 +54,25 @@ class _ListWithAppBarState extends State<ListWithAppBar> {
       ),
     );
   }
+}
+
+void oneImageBox(BuildContext context, String url) {
+  showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Image.network(url),
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        );
+      });
 }
 
 void oneAlertBox(BuildContext context, String title) {

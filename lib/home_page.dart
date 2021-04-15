@@ -165,7 +165,28 @@ class HomePageState extends State<HomePage> {
               label: "Activity",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
+              icon: FutureBuilder(
+                future: getPfp(widget.userName),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.toString().isNotEmpty)
+                      return ClipOval(
+                        child: Image.network(
+                          snapshot.data,
+                          height: 26,
+                          width: 26,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    else
+                      return Icon(
+                        Icons.account_circle,
+                        size: 24,
+                      );
+                  }
+                  return Container();
+                },
+              ),
               label: "Profile",
             ),
           ],
@@ -330,7 +351,19 @@ class PostListState extends State<PostList> {
                               EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),
                         Padding(
-                          child: Text(post.userName),
+                          child: GestureDetector(
+                            child: Text(post.userName),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfilePage(
+                                            post.userName,
+                                            widget.usertemp,
+                                            solo: true,
+                                          )));
+                            },
+                          ),
                           padding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),

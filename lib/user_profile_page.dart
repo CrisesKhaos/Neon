@@ -211,12 +211,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.account_circle,
                                   size: 190,
                                 )
-                              : ClipOval(
-                                  child: Image.network(
-                                    values['pfp'],
-                                    height: 160,
-                                    width: 160,
-                                    fit: BoxFit.cover,
+                              : GestureDetector(
+                                  onTap: () {
+                                    oneImageBox(context, values['pfp']);
+                                  },
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      values['pfp'],
+                                      height: 160,
+                                      width: 160,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                           Column(
