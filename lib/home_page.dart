@@ -226,6 +226,7 @@ class HomePageState extends State<HomePage> {
   }
 }
 
+//! convert this into a class or a function or a page ffs
 class PostList extends StatefulWidget {
   //final List<Post> listItems;
   final String usertemp;
@@ -287,16 +288,16 @@ class PostListState extends State<PostList> {
     );
   }
 
-  Future<String> getPfp(String whos) async {
-    DataSnapshot x =
-        await databaseReference.child("user_details/" + whos + "/pfp").once();
-    return x.value;
-  }
-
   @override
   void initState() {
     super.initState();
     hello();
+  }
+
+  Future<String> getPfp(String whos) async {
+    DataSnapshot x =
+        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    return x.value;
   }
 
   @override
@@ -551,6 +552,7 @@ class PostListState extends State<PostList> {
                                       .child("activity/" + post.userName)
                                       .push()
                                       .set({
+                                    "postId": post.rand,
                                     "post": post.imageUrl,
                                     "comment": commentCont.text,
                                     "action": "comment",

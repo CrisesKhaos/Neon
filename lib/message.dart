@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:main/creds_database.dart';
+import 'package:main/database.dart';
 import 'package:main/widgets.dart';
 
 class Message {

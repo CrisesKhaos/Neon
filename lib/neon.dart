@@ -6,6 +6,7 @@ import 'widgets.dart';
 
 class Neon {
   final String imgUrl;
+  //post is the uid of the post
   final String post;
   //user the owner of the post which is being neoned
   final String user;
@@ -54,6 +55,7 @@ class Neon {
 
   void updateActivty() async {
     databaseReference.child('activity/' + this.user).push().set({
+      "postId": this.post,
       "post": this.imgUrl,
       "action": "neon",
       "user": this.owner,

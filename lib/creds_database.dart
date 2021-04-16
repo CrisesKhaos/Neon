@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
-final databaseReference = FirebaseDatabase.instance.reference();
+final _databaseReference = FirebaseDatabase.instance.reference();
 
 Map<String, dynamic> toJson(String user, String pass, String mail) {
   return {
@@ -10,10 +10,10 @@ Map<String, dynamic> toJson(String user, String pass, String mail) {
 }
 
 void registerUser(String userName, String pass, String mail, String name) {
-  databaseReference
+  _databaseReference
       .child('credentials/' + userName)
       .set(toJson(userName, pass, mail));
-  databaseReference.child('user_details/' + userName).set({
+  _databaseReference.child('user_details/' + userName).set({
     'followers': [userName],
     'following': [userName],
     'pfp': '',
@@ -30,7 +30,7 @@ Future<bool> checkCredentials(String userName, String pass) async {
   };
 
   DataSnapshot dataSnapshot =
-      await databaseReference.child('credentials/' + userName).once();
+      await _databaseReference.child('credentials/' + userName).once();
 
   try {
     dataSnapshot.value.forEach((key, value) {

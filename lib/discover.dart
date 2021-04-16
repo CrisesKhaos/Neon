@@ -34,7 +34,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
         itemBuilder: (context, index) {
           var shownUser = _userDetails[index];
           shownUser.getDetails();
-          print(shownUser.pfp);
           return Card(
             margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
             elevation: 5,

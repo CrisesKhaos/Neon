@@ -60,6 +60,7 @@ class Post {
       {'hasLiked': this.hasLiked.toList()},
     );
     databaseReference.child("activity/" + this.userName).push().set({
+      "postId": this.rand,
       "post": this.imageUrl,
       "action": "liked",
       "user": liker,

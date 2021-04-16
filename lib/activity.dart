@@ -1,6 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:main/creds_database.dart';
+import 'package:flutter/gestures.dart';
+import 'package:main/comments.dart';
+import 'package:main/post.dart';
+import 'package:main/user_profile_page.dart';
+
+import 'home_page.dart';
 
 class ActivityPage extends StatefulWidget {
   final user;
@@ -67,7 +72,24 @@ class _ActivityPageState extends State<ActivityPage> {
                     : null,
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  onTap: () {},
+                  onTap: () async {
+                    if (main[index]['action'] != 'following') {
+                      DataSnapshot value = await databaseReference
+                          .child('posts/' + widget.user)
+                          .child(main[index]['postId'])
+                          .once();
+                      Post tempPost =
+                          createPost(widget.user, value.value, value.key);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CommentsPage(
+                                    tempPost,
+                                    widget.user,
+                                    title: "Post",
+                                  )));
+                    }
+                  },
                   leading: FutureBuilder(
                     future: getPfp(main[index]["user"]),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -91,32 +113,132 @@ class _ActivityPageState extends State<ActivityPage> {
                     },
                   ),
                   title: main[index]["action"] == "liked"
-                      ? Text(
-                          main[index]["user"] + " liked your post.",
-                          style: TextStyle(fontSize: 17),
+                      ? RichText(
+                          text: TextSpan(
+                            text: main[index]["user"],
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfilePage(
+                                            main[index]['user'],
+                                            widget.user,
+                                            solo: true,
+                                          )),
+                                );
+                              },
+                            children: [
+                              TextSpan(
+                                text: " liked your post.",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       : main[index]['action'] == "following"
-                          ? Text(
-                              main[index]["user"] + " started following you.",
-                              style: TextStyle(fontSize: 17),
+                          ? RichText(
+                              text: TextSpan(
+                                text: main[index]["user"],
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ProfilePage(
+                                                main[index]['user'],
+                                                widget.user,
+                                                solo: true,
+                                              )),
+                                    );
+                                  },
+                                children: [
+                                  TextSpan(
+                                    text: " started following you.",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  )
+                                ],
+                              ),
                             )
                           : main[index]['action'] == "comment"
-                              ? Text(
-                                  main[index]["user"] +
-                                      " commented on your post:",
-                                  style: TextStyle(fontSize: 17),
+                              ? RichText(
+                                  text: TextSpan(
+                                    text: main[index]["user"],
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ProfilePage(
+                                                    main[index]['user'],
+                                                    widget.user,
+                                                    solo: true,
+                                                  )),
+                                        );
+                                      },
+                                    children: [
+                                      TextSpan(
+                                        text: " commented on your post:",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 )
                               : main[index]['action'] == 'neon'
-                                  ? Text(
-                                      main[index]["user"] +
-                                          " neoned your post!",
-                                      style: TextStyle(
-                                          fontSize: 17, color: Colors.white),
+                                  ? RichText(
+                                      text: TextSpan(
+                                        text: main[index]["user"],
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProfilePage(
+                                                        main[index]['user'],
+                                                        widget.user,
+                                                        solo: true,
+                                                      )),
+                                            );
+                                          },
+                                        children: [
+                                          TextSpan(
+                                            text: " neoned your post!",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     )
                                   : null,
-                  trailing: main[index]["action"] == "liked" ||
-                          main[index]['action'] == 'comment' ||
-                          main[index]['action'] == 'neon'
+                  trailing: main[index]["action"] != "following"
                       ? Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: Image.network(main[index]["post"]),

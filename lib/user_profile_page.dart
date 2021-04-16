@@ -7,8 +7,7 @@ import 'package:main/post.dart';
 import 'package:main/view_user_posts.dart';
 import 'package:main/widgets.dart';
 import 'neon.dart';
-
-final databaseReference = FirebaseDatabase.instance.reference();
+import 'package:main/home_page.dart';
 
 //* pls send help i have no idea what i did but it works
 class UppImage {

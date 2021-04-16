@@ -6,7 +6,7 @@ import 'package:main/widgets.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'neon.dart';
 import 'post.dart';
-import 'user_profile_page.dart';
+import 'home_page.dart';
 
 class UserPosts extends StatefulWidget {
   final String usertemp;
@@ -328,6 +328,7 @@ class _UserPostsState extends State<UserPosts> {
                                     .child("activty/" + post.userName)
                                     .push()
                                     .set({
+                                  "postId": post.rand,
                                   "post": post.imageUrl,
                                   "action": "comment",
                                   "user": widget.usertemp,

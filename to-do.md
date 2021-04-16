@@ -8,9 +8,13 @@
 > route in main
 > about dialog
 
+karlo bhay pls -
+
+> discover
+
 messages -
 
-> check for time and unseen
+> push notification
 
 profile page -
 
@@ -19,10 +23,9 @@ profile page -
 
 activity -
 
+> push notifications
 > user profile
 > on tapping go to post
-
-the faster the better -
 
 edit profile -
 
@@ -52,6 +55,7 @@ register -
 
 sign in -
 
+> show pass
 > blur pass
 > remember me
 
@@ -84,3 +88,4 @@ done😀 -
 > > //enlarge pictures
 > > //push and forget
 > > //show neons and follow
+> > //check for time and unseen
