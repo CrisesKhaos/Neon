@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:main/comments.dart';
+import 'package:main/send_post.dart';
 import 'package:main/widgets.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'neon.dart';
@@ -11,6 +12,7 @@ import 'home_page.dart';
 class UserPosts extends StatefulWidget {
   final String usertemp;
   final int index;
+  //whos is the person 'whos' post youre veiwing
   final String whos;
 
   UserPosts(this.whos, this.usertemp, this.index);
@@ -186,6 +188,15 @@ class _UserPostsState extends State<UserPosts> {
                           ),
                         ),
                         Spacer(),
+                        IconButton(
+                            icon: Icon(Icons.send_rounded),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SendPost(widget.usertemp)));
+                            }),
                         IconButton(
                           alignment: Alignment.center,
                           icon: post.neon.contains(widget.usertemp)

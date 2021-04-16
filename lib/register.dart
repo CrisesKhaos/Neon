@@ -155,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               BorderSide(width: 5, color: Colors.yellow)),
                       labelText: "PASSWORD",
                       errorText: passError,
-                      errorMaxLines: 3),
+                      errorMaxLines: 10),
                   onChanged: (text) {
                     if (text.length > 7 &&
                         text.contains(RegExp(r'[A-Z]')) &&

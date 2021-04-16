@@ -1,3 +1,6 @@
+learn -
+
+> slivers
 > learn hash maps
 > login with google later??
 > why am i getting in null username
@@ -7,6 +10,7 @@
 > flare
 > route in main
 > about dialog
+> cache
 
 karlo bhay pls -
 
@@ -47,7 +51,6 @@ home page -
 
 register -
 
-> text poti kar rha hai
 > trim
 > how to check if the user enter a $ or #
 > blur password
@@ -71,7 +74,6 @@ done😀 -
 > > //check if a valid username is entered
 > > //chec password length
 > > //chec if username is tacen
-> > /?chec if correct username is enterd
 > > //chec if correct pass is entered
 > > //enter a valid username
 > > //"Push genratates a random value my dude"
@@ -89,3 +91,5 @@ done😀 -
 > > //push and forget
 > > //show neons and follow
 > > //check for time and unseen
+> > //?text poti kar rha hai
+> > /?chec if correct username is enterd

@@ -90,27 +90,40 @@ class _ActivityPageState extends State<ActivityPage> {
                                   )));
                     }
                   },
-                  leading: FutureBuilder(
-                    future: getPfp(main[index]["user"]),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data.toString().isNotEmpty)
-                          return ClipOval(
-                            child: Image.network(
-                              snapshot.data,
-                              height: 35,
-                              width: 35,
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        else
-                          return Icon(
-                            Icons.account_circle,
-                            size: 40,
-                          );
-                      }
-                      return Container();
+                  leading: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfilePage(
+                                  main[index]['user'],
+                                  widget.user,
+                                  solo: true,
+                                )),
+                      );
                     },
+                    child: FutureBuilder(
+                      future: getPfp(main[index]["user"]),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.toString().isNotEmpty)
+                            return ClipOval(
+                              child: Image.network(
+                                snapshot.data,
+                                height: 35,
+                                width: 35,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          else
+                            return Icon(
+                              Icons.account_circle,
+                              size: 40,
+                            );
+                        }
+                        return Container();
+                      },
+                    ),
                   ),
                   title: main[index]["action"] == "liked"
                       ? RichText(

@@ -4,6 +4,7 @@ import 'package:main/comments.dart';
 import 'package:main/discover.dart';
 import 'package:main/message.dart';
 import 'package:main/neon.dart';
+import 'package:main/send_post.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -408,7 +409,17 @@ class PostListState extends State<PostList> {
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
+                        
                         Spacer(),
+                        IconButton(
+                            icon: Icon(Icons.send_rounded),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SendPost(widget.usertemp)));
+                            }),
                         IconButton(
                           alignment: Alignment.center,
                           icon: post.neon.contains(widget.usertemp)

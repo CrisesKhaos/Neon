@@ -1,5 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:main/comments.dart';
+import 'package:main/send_post.dart';
+import 'package:main/user_profile_page.dart';
 import 'post.dart';
 import 'home_page.dart';
 import 'widgets.dart';
@@ -113,6 +116,14 @@ class _NeonPageState extends State<NeonPage> {
         if (postSnapshot.value != null) {
           Post tempPost =
               createPost(postValues[1], postSnapshot.value, postSnapshot.key);
+          if (postSnapshot.value['comments'] != null) {
+            postSnapshot.value["comments"].forEach((key, value) {
+              tempPost.comments
+                  .add(new Comment(value["user"], value['comment']));
+              tempPost.comments.reversed;
+            });
+          }
+
           setState(() {
             neonTimeline.add(tempPost);
           });
@@ -126,7 +137,6 @@ class _NeonPageState extends State<NeonPage> {
   void initState() {
     super.initState();
     getdata();
-    print(neonTimeline);
   }
 
   @override
@@ -144,10 +154,11 @@ class _NeonPageState extends State<NeonPage> {
           ? ListView.builder(
               itemCount: neonTimeline.length,
               itemBuilder: (context, index) {
+                TextEditingController commentCont = new TextEditingController();
                 Post post = neonTimeline[index];
                 print(giveMonth(int.parse(months[index])));
                 return Card(
-                  elevation: 40,
+                  elevation: 10,
                   shadowColor: Colors.pink[200],
                   child: Column(
                     children: <Widget>[
@@ -189,10 +200,22 @@ class _NeonPageState extends State<NeonPage> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                           ),
-                          Padding(
-                            child: Text(post.userName),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfilePage(
+                                            post.userName,
+                                            widget.visitor,
+                                            solo: true,
+                                          )));
+                            },
+                            child: Padding(
+                              child: Text(post.userName),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                            ),
                           ),
                         ],
                       ),
@@ -220,6 +243,15 @@ class _NeonPageState extends State<NeonPage> {
                           ),
                           Spacer(),
                           IconButton(
+                              icon: Icon(Icons.send_rounded),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SendPost(widget.visitor)));
+                              }),
+                          IconButton(
                             alignment: Alignment.center,
                             icon: post.neon.contains(widget.visitor)
                                 ? Icon(Icons.label_important_rounded)
@@ -232,29 +264,154 @@ class _NeonPageState extends State<NeonPage> {
                                         post.userName,
                                         widget.visitor,
                                         post.imageUrl);
-                                    await neon.monthExists()
-                                        ? oneAlertBox(context,
-                                            "You can Neon only one post per month!")
-                                        : neon.toDatabase();
+                                    if (await neon.monthExists())
+                                      oneAlertBox(context,
+                                          "You can Neon only one post per month!");
+                                    else {
+                                      neon.toDatabase();
+                                      if (await neon.monthExists()) {
+                                        neon.updateActivty();
+                                        oneAlertBox(
+                                            context, "Neon added succesfully!");
+                                        post.neon.add(widget.visitor);
+                                        setState(() {});
+                                      } else
+                                        oneAlertBox(
+                                            context, "Something went wrong! ");
+                                    }
                                   },
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
-                              child: Text(
-                                post.userName,
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                            padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            child: RichText(
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                text: post.userName + "  ",
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                      text: post.caption,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                      ))
+                                ],
+                              ),
+                            )),
+                      ),
+                      if (post.comments.isNotEmpty)
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                              padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  text: post.comments[0].owner + "  ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                        text: post.comments[0].comment,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                        ))
+                                  ],
+                                ),
                               )),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                            child: Text(post.caption),
-                          )
-                        ],
-                      )
+                        ),
+                      if (post.comments.length > 1)
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                              padding: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  text: post.comments[1].owner + "  ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                        text: post.comments[1].comment,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                        ))
+                                  ],
+                                ),
+                              )),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        child: GestureDetector(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "View comments",
+                              style: TextStyle(color: Colors.black38),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CommentsPage(post, widget.visitor),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      TextField(
+                        controller: commentCont,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.message),
+                          labelText: "Add a comment..",
+                          suffixIcon: IconButton(
+                              icon: Icon(Icons.send),
+                              splashColor: Colors.pinkAccent[100],
+                              onPressed: () {
+                                if (commentCont.text.isNotEmpty) {
+                                  databaseReference
+                                      .child("posts/" +
+                                          post.userName +
+                                          "/" +
+                                          post.rand)
+                                      .child("comments/")
+                                      .push()
+                                      .set({
+                                    "user": widget.visitor,
+                                    "comment": commentCont.text
+                                  });
+                                  post.comments.add(Comment(
+                                      widget.visitor, commentCont.text));
+                                  if (widget.visitor != post.userName)
+                                    databaseReference
+                                        .child("activity/" + post.userName)
+                                        .push()
+                                        .set({
+                                      "postId": post.rand,
+                                      "post": post.imageUrl,
+                                      "comment": commentCont.text,
+                                      "action": "comment",
+                                      "user": widget.visitor,
+                                      "time":
+                                          DateTime.now().microsecondsSinceEpoch
+                                    });
+                                  setState(() {});
+                                  commentCont.clear();
+                                }
+                                FocusScope.of(context).unfocus();
+                              }),
+                        ),
+                      ),
                     ],
                   ),
                 );
