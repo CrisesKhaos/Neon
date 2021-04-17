@@ -249,7 +249,7 @@ class _NeonPageState extends State<NeonPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SendPost(widget.visitor)));
+                                            SendPost(widget.visitor, post)));
                               }),
                           IconButton(
                             alignment: Alignment.center,

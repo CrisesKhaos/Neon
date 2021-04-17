@@ -70,8 +70,7 @@ class HomePageState extends State<HomePage> {
                         sharedPreferences.remove("user").then((value) {
                           Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInPage()),
+                              MaterialPageRoute(builder: (context) => SignInPage()),
                               (route) => false);
                         });
                       },
@@ -98,8 +97,7 @@ class HomePageState extends State<HomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewPostPage(widget.userName)));
+                                  builder: (context) => NewPostPage(widget.userName)));
                         },
                       )
                     : _currentIndex == 4
@@ -114,8 +112,7 @@ class HomePageState extends State<HomePage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MessageListPage(
-                                              widget.userName)));
+                                          builder: (context) => MessageListPage(widget.userName)));
                                 },
                               )
                             : null
@@ -267,16 +264,13 @@ class PostListState extends State<PostList> {
       (Event event) async {
         String element = event.snapshot.value['post'].toString();
         List postValues = element.split('(split)');
-        DataSnapshot postSnapshot = await databaseReference
-            .child('posts/' + postValues[0] + "/" + postValues[1])
-            .once();
+        DataSnapshot postSnapshot =
+            await databaseReference.child('posts/' + postValues[0] + "/" + postValues[1]).once();
         if (postSnapshot.value != null) {
-          Post tempPost =
-              createPost(postValues[0], postSnapshot.value, postSnapshot.key);
+          Post tempPost = createPost(postValues[0], postSnapshot.value, postSnapshot.key);
           if (postSnapshot.value['comments'] != null) {
             postSnapshot.value["comments"].forEach((key, value) {
-              tempPost.comments
-                  .add(new Comment(value["user"], value['comment']));
+              tempPost.comments.add(new Comment(value["user"], value['comment']));
               tempPost.comments.reversed;
             });
           }
@@ -296,8 +290,7 @@ class PostListState extends State<PostList> {
   }
 
   Future<String> getPfp(String whos) async {
-    DataSnapshot x =
-        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    DataSnapshot x = await databaseReference.child("user_details/" + whos + "/pfp").once();
     return x.value;
   }
 
@@ -328,8 +321,7 @@ class PostListState extends State<PostList> {
                         Padding(
                           child: FutureBuilder(
                             future: getPfp(post.userName),
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
+                            builder: (BuildContext context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data.toString().isNotEmpty)
                                   return ClipOval(
@@ -349,8 +341,7 @@ class PostListState extends State<PostList> {
                               return Container();
                             },
                           ),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),
                         Padding(
                           child: GestureDetector(
@@ -366,15 +357,14 @@ class PostListState extends State<PostList> {
                                           )));
                             },
                           ),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),
                       ],
                     ),
                     Image.network(
                       post.imageUrl,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
+                      loadingBuilder:
+                          (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) {
                           return child;
                         }
@@ -394,22 +384,19 @@ class PostListState extends State<PostList> {
                         IconButton(
                           icon: Icon(Icons.favorite),
                           onPressed: () {
-                            this.changelix(
-                                () => post.likePost(widget.usertemp));
+                            this.changelix(() => post.likePost(widget.usertemp));
                           },
                           color: post.usersLiked.contains(widget.usertemp)
                               ? Colors.redAccent[700]
                               : Colors.black,
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                           child: Text(
                             post.usersLiked.length.toString(),
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
-                        
                         Spacer(),
                         IconButton(
                             icon: Icon(Icons.send_rounded),
@@ -417,8 +404,7 @@ class PostListState extends State<PostList> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          SendPost(widget.usertemp)));
+                                      builder: (context) => SendPost(widget.usertemp, post)));
                             }),
                         IconButton(
                           alignment: Alignment.center,
@@ -428,22 +414,19 @@ class PostListState extends State<PostList> {
                           onPressed: post.neon.contains(widget.usertemp)
                               ? null
                               : () async {
-                                  Neon neon = new Neon(post.rand, post.userName,
-                                      widget.usertemp, post.imageUrl);
+                                  Neon neon = new Neon(
+                                      post.rand, post.userName, widget.usertemp, post.imageUrl);
                                   if (await neon.monthExists())
-                                    oneAlertBox(context,
-                                        "You can Neon only one post per month!");
+                                    oneAlertBox(context, "You can Neon only one post per month!");
                                   else {
                                     neon.toDatabase();
                                     if (await neon.monthExists()) {
                                       neon.updateActivty();
-                                      oneAlertBox(
-                                          context, "Neon added succesfully!");
+                                      oneAlertBox(context, "Neon added succesfully!");
                                       post.neon.add(widget.usertemp);
                                       setState(() {});
                                     } else
-                                      oneAlertBox(
-                                          context, "Something went wrong! ");
+                                      oneAlertBox(context, "Something went wrong! ");
                                   }
                                 },
                         ),
@@ -457,9 +440,7 @@ class PostListState extends State<PostList> {
                             textAlign: TextAlign.left,
                             text: TextSpan(
                               text: post.userName + "  ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                               children: [
                                 TextSpan(
                                     text: post.caption,
@@ -479,9 +460,7 @@ class PostListState extends State<PostList> {
                               textAlign: TextAlign.left,
                               text: TextSpan(
                                 text: post.comments[0].owner + "  ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                                 children: [
                                   TextSpan(
                                       text: post.comments[0].comment,
@@ -501,9 +480,7 @@ class PostListState extends State<PostList> {
                               textAlign: TextAlign.left,
                               text: TextSpan(
                                 text: post.comments[1].owner + "  ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                                 children: [
                                   TextSpan(
                                       text: post.comments[1].comment,
@@ -528,8 +505,7 @@ class PostListState extends State<PostList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CommentsPage(post, widget.usertemp),
+                              builder: (context) => CommentsPage(post, widget.usertemp),
                             ),
                           );
                         },
@@ -546,30 +522,19 @@ class PostListState extends State<PostList> {
                             onPressed: () {
                               if (commentCont.text.isNotEmpty) {
                                 databaseReference
-                                    .child("posts/" +
-                                        post.userName +
-                                        "/" +
-                                        post.rand)
+                                    .child("posts/" + post.userName + "/" + post.rand)
                                     .child("comments/")
                                     .push()
-                                    .set({
-                                  "user": widget.usertemp,
-                                  "comment": commentCont.text
-                                });
-                                post.comments.add(
-                                    Comment(widget.usertemp, commentCont.text));
+                                    .set({"user": widget.usertemp, "comment": commentCont.text});
+                                post.comments.add(Comment(widget.usertemp, commentCont.text));
                                 if (widget.usertemp != post.userName)
-                                  databaseReference
-                                      .child("activity/" + post.userName)
-                                      .push()
-                                      .set({
+                                  databaseReference.child("activity/" + post.userName).push().set({
                                     "postId": post.rand,
                                     "post": post.imageUrl,
                                     "comment": commentCont.text,
                                     "action": "comment",
                                     "user": widget.usertemp,
-                                    "time":
-                                        DateTime.now().microsecondsSinceEpoch
+                                    "time": DateTime.now().microsecondsSinceEpoch
                                   });
                                 setState(() {});
                                 commentCont.clear();

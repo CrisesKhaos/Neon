@@ -2,13 +2,19 @@ import 'dart:ui';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:main/comments.dart';
 import 'package:main/database.dart';
+import 'package:main/post.dart';
+import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 
 class Message {
-  final String sender;
-  final String message;
-  Message(this.sender, this.message);
+  String sender;
+  String message;
+  final bool isPost;
+  String postId;
+  String postUser;
+  Message(this.isPost, {this.sender = '', this.message = '', this.postId = '', this.postUser = ''});
 }
 
 class MessageListPage extends StatefulWidget {
@@ -27,8 +33,7 @@ class _MessageListPageState extends State<MessageListPage> {
   List extra = [];
 
   getList() async {
-    DataSnapshot list =
-        await databaseReference.child("messages/" + widget.user).once();
+    DataSnapshot list = await databaseReference.child("messages/" + widget.user).once();
     if (list.value != null) {
       databaseReference
           .child("messages/" + widget.user)
@@ -44,10 +49,8 @@ class _MessageListPageState extends State<MessageListPage> {
       });
     }
 
-    DataSnapshot data = await databaseReference
-        .child("user_details/" + widget.user)
-        .child("following")
-        .once();
+    DataSnapshot data =
+        await databaseReference.child("user_details/" + widget.user).child("following").once();
     data.value.forEach((value) {
       if (!users.contains(value) && value != widget.user)
         setState(() {
@@ -106,9 +109,7 @@ class _MessageListPageState extends State<MessageListPage> {
               onTap: () async {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          MessagePage(widget.user, users[index])),
+                  MaterialPageRoute(builder: (context) => MessagePage(widget.user, users[index])),
                 );
               },
               trailing: unseen[index] != 0
@@ -156,10 +157,7 @@ class _MessageListPageState extends State<MessageListPage> {
                 alignment: Alignment.center,
                 child: Text(
                   "Start a Conversation...",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600),
+                  style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w600),
                 ),
               ),
             );
@@ -195,8 +193,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MessagePage(
-                              widget.user, extra[index - (users.length + 1)])));
+                          builder: (context) => MessagePage(widget.user, extra[index - (users.length + 1)])));
                 });
         },
       ),
@@ -225,14 +222,37 @@ class _MessagePageState extends State<MessagePage> {
         .onChildAdded
         .listen((Event event) async {
       Map chat = event.snapshot.value;
-      Message msg = Message(chat["user"], chat["message"]);
-      setState(() {
-        virgin = false;
-        chats.add(msg);
-      });
+      if (chat["isPost"] == null) {
+        Message msg = Message(
+          false,
+          sender: chat["user"],
+          message: chat["message"],
+        );
+        setState(() {
+          if (virgin) virgin = false;
+          chats.add(msg);
+        });
+      } else {
+        Message msg = Message(
+          true,
+          sender: chat['user'],
+          postId: chat['postId'],
+          postUser: chat['postUser'],
+        );
+        setState(() {
+          chats.add(msg);
+        });
+      }
     }).onError((e) {
       print(e + "yeeeeeeeeet");
     });
+  }
+
+  Future<Post> getPost(int index) async {
+    DataSnapshot postV =
+        await databaseReference.child("posts/" + chats[index].postUser + "/" + chats[index].postId).once();
+    Post post = createPost(chats[index].postUser, postV.value, postV.key);
+    return post;
   }
 
   @override
@@ -243,10 +263,9 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!virgin)
-      databaseReference
-          .child("messages/" + widget.user + "/" + widget.toWhom)
-          .update({'unseen': 0});
+    //! check if 0 or not so u dnt have to write evry build
+
+    databaseReference.child("messages/" + widget.user + "/" + widget.toWhom).update({'unseen': 0});
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 35,
@@ -286,9 +305,8 @@ class _MessagePageState extends State<MessagePage> {
         children: [
           Expanded(
               child: StreamBuilder(
-                  stream: databaseReference
-                      .child("messages/" + widget.user + "/" + widget.toWhom)
-                      .onChildAdded,
+                  stream:
+                      databaseReference.child("messages/" + widget.user + "/" + widget.toWhom).onChildAdded,
                   builder: (context, event) {
                     return ListView.builder(
                         itemCount: chats.length,
@@ -297,28 +315,155 @@ class _MessagePageState extends State<MessagePage> {
                               alignment: chats[index].sender == widget.user
                                   ? Alignment.centerRight
                                   : Alignment.centerLeft,
-                              child: Card(
-                                margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
-                                color: chats[index].sender == widget.user
-                                    ? Colors.pink
-                                    : Colors.white60,
-                                child: Container(
-                                  margin: EdgeInsets.fromLTRB(7, 3, 7, 3),
-                                  constraints: BoxConstraints(
-                                      maxWidth: 3 *
-                                          (MediaQuery.of(context).size.width) /
-                                          4),
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    chats[index].message,
-                                    style: TextStyle(
-                                        color:
-                                            chats[index].sender == widget.user
-                                                ? Colors.white
-                                                : Colors.black),
-                                  ),
-                                ),
-                              ));
+                              child: chats[index].isPost
+                                  ? GestureDetector(
+                                      onTap: () async {
+                                        Post postPush = await getPost(index);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => CommentsPage(
+                                                postPush,
+                                                widget.user,
+                                                title: "Post",
+                                              ),
+                                            ));
+                                      },
+                                      child: FutureBuilder(
+                                        future: getPost(index),
+                                        builder: (context, post) {
+                                          if (post.hasData)
+                                            return Container(
+                                              constraints: BoxConstraints(
+                                                  maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
+                                              margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
+                                              child: Card(
+                                                margin: EdgeInsets.all(0),
+                                                color: chats[index].sender == widget.user
+                                                    ? Colors.pink
+                                                    : Colors.white60,
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          child: FutureBuilder(
+                                                            future: getPfp(post.data.userName),
+                                                            builder: (BuildContext context,
+                                                                AsyncSnapshot snapshot) {
+                                                              if (snapshot.hasData) {
+                                                                if (snapshot.data.toString().isNotEmpty)
+                                                                  return ClipOval(
+                                                                    child: Image.network(
+                                                                      snapshot.data,
+                                                                      height: 30,
+                                                                      width: 30,
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                                  );
+                                                                else
+                                                                  return Icon(
+                                                                    Icons.account_circle,
+                                                                    size: 32,
+                                                                  );
+                                                              }
+                                                              return Container();
+                                                            },
+                                                          ),
+                                                          padding: EdgeInsets.symmetric(
+                                                              horizontal: 10, vertical: 5),
+                                                        ),
+                                                        Align(
+                                                          alignment: Alignment.centerLeft,
+                                                          child: Padding(
+                                                            child: GestureDetector(
+                                                              child: Text(
+                                                                post.data.userName,
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) => ProfilePage(
+                                                                            post.data.userName, widget.user,
+                                                                            solo: true)));
+                                                              },
+                                                            ),
+                                                            padding: EdgeInsets.symmetric(
+                                                                horizontal: 10, vertical: 5),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Image.network(
+                                                      post.data.imageUrl,
+                                                      loadingBuilder: (BuildContext context, Widget child,
+                                                          ImageChunkEvent loadingProgress) {
+                                                        if (loadingProgress == null) {
+                                                          return child;
+                                                        }
+                                                        return Center(
+                                                          child: CircularProgressIndicator(
+                                                            value: loadingProgress.expectedTotalBytes != null
+                                                                ? loadingProgress.cumulativeBytesLoaded /
+                                                                    loadingProgress.expectedTotalBytes
+                                                                : null,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                    Align(
+                                                      alignment: Alignment.topLeft,
+                                                      child: Container(
+                                                          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                                          child: RichText(
+                                                            maxLines: 1,
+                                                            textAlign: TextAlign.left,
+                                                            text: TextSpan(
+                                                              text: post.data.userName + "  ",
+                                                              style: TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: Colors.white),
+                                                              children: [
+                                                                TextSpan(
+                                                                    text: post.data.caption,
+                                                                    style: TextStyle(
+                                                                      fontWeight: FontWeight.normal,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                          )),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          else
+                                            return CircularProgressIndicator.adaptive();
+                                        },
+                                      ),
+                                    )
+                                  : Card(
+                                      margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
+                                      color:
+                                          chats[index].sender == widget.user ? Colors.pink : Colors.white60,
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(7, 3, 7, 3),
+                                        constraints: BoxConstraints(
+                                            maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
+                                        padding: EdgeInsets.all(8),
+                                        child: Text(
+                                          chats[index].message,
+                                          style: TextStyle(
+                                              color: chats[index].sender == widget.user
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                        ),
+                                      ),
+                                    ));
                         });
                   })),
           TextField(
@@ -334,16 +479,12 @@ class _MessagePageState extends State<MessagePage> {
                       //* updating the time of the last msg sent so it can be sorted
                       //*and also the last message
                       //? of to whom
-                      await databaseReference
-                          .child(
-                              "messages/" + widget.user + "/" + widget.toWhom)
-                          .update({
+                      await databaseReference.child("messages/" + widget.user + "/" + widget.toWhom).update({
                         "last": mainCont.text,
                         "time": -DateTime.now().microsecondsSinceEpoch,
                       });
                       await databaseReference
-                          .child(
-                              "messages/" + widget.user + "/" + widget.toWhom)
+                          .child("messages/" + widget.user + "/" + widget.toWhom)
                           .push()
                           .set({
                         "user": widget.user,
@@ -351,10 +492,10 @@ class _MessagePageState extends State<MessagePage> {
                         "time": DateTime.now().millisecondsSinceEpoch,
                       });
                       await databaseReference
-                          .child(
-                              "messages/" + widget.toWhom + "/" + widget.user)
+                          .child("messages/" + widget.toWhom + "/" + widget.user)
                           .push()
                           .set({
+                        //user is the person send the message
                         "user": widget.user,
                         "message": mainCont.text,
                         "time": DateTime.now().millisecondsSinceEpoch
@@ -364,11 +505,8 @@ class _MessagePageState extends State<MessagePage> {
                       //*and also the last message
                       //? of to whom
                       //? and also its unseen meassages so proper can be displayed
-                      //
-                      await databaseReference
-                          .child(
-                              "messages/" + widget.toWhom + "/" + widget.user)
-                          .update({
+
+                      await databaseReference.child("messages/" + widget.toWhom + "/" + widget.user).update({
                         "time": -DateTime.now().microsecondsSinceEpoch,
                         "last": mainCont.text,
                         'unseen': ServerValue.increment(1)

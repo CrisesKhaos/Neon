@@ -195,7 +195,7 @@ class _UserPostsState extends State<UserPosts> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          SendPost(widget.usertemp)));
+                                          SendPost(widget.usertemp, post)));
                             }),
                         IconButton(
                           alignment: Alignment.center,
