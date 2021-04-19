@@ -231,7 +231,7 @@ class _BodyState extends State<Body> {
                 ),
               ),
               Positioned(
-                bottom: 42,
+                bottom: 40,
                 right: 110,
                 child: Center(
                   child: Padding(

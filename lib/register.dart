@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool goodmail = false;
   bool samePass = false;
   bool goodname = false;
+  bool passhidden = true;
   DatabaseReference userSnap;
 
   void giveError(var errorType, {String type}) {
@@ -211,12 +212,33 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                         child: TextField(
                           controller: passController,
+                          obscureText: passhidden,
+                          autocorrect: false,
                           decoration: InputDecoration(
                               prefixIcon: Icon(Icons.lock_outline),
                               border:
                                   OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.yellow)),
                               labelText: "PASSWORD",
                               errorText: passError,
+                              suffixIcon: passController.text.isNotEmpty
+                                  ? passhidden
+                                      ? IconButton(
+                                          icon: Icon(Icons.remove_red_eye),
+                                          onPressed: () {
+                                            setState(() {
+                                              passhidden = !passhidden;
+                                            });
+                                          },
+                                        )
+                                      : IconButton(
+                                          icon: Icon(Icons.remove_red_eye_outlined),
+                                          onPressed: () {
+                                            setState(() {
+                                              passhidden = !passhidden;
+                                            });
+                                          },
+                                        )
+                                  : null,
                               errorMaxLines: 5),
                           onChanged: (text) {
                             if (text.length > 7 &&
@@ -245,22 +267,24 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                         child: TextField(
                           controller: confirmController,
+                          obscureText: true,
                           decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.lock_outline),
-                              border:
-                                  OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.yellow)),
-                              labelText: "CONFIRM PASSWORD",
-                              suffixIcon: confirmController.text.isNotEmpty
-                                  ? samePass
-                                      ? Icon(
-                                          Icons.check_circle_rounded,
-                                          color: Colors.green,
-                                        )
-                                      : Icon(
-                                          Icons.cancel_rounded,
-                                          color: Colors.red[800],
-                                        )
-                                  : null),
+                            prefixIcon: Icon(Icons.lock_outline),
+                            border:
+                                OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.yellow)),
+                            labelText: "CONFIRM PASSWORD",
+                            suffixIcon: confirmController.text.isNotEmpty
+                                ? samePass
+                                    ? Icon(
+                                        Icons.check_circle_rounded,
+                                        color: Colors.green,
+                                      )
+                                    : Icon(
+                                        Icons.cancel_rounded,
+                                        color: Colors.red[800],
+                                      )
+                                : null,
+                          ),
                           onChanged: (text) {
                             if (text == passController.text)
                               setState(() {
