@@ -55,10 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<int> getPosts() async {
     List x = [];
-    DataSnapshot temp = await databaseReference
-        .child('posts/' + widget.user)
-        .orderByKey()
-        .once();
+    DataSnapshot temp = await databaseReference.child('posts/' + widget.user).orderByKey().once();
     x.addAll(temp.value.keys);
     return x.length;
   }
@@ -84,8 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: <Widget>[
                               Padding(
                                 child: Text(post.userName),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                               ),
                             ],
                           ),
@@ -95,16 +91,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               IconButton(
                                 icon: Icon(Icons.favorite),
                                 onPressed: () {
-                                  changelix(
-                                      () => post.likePost(widget.visitor));
+                                  changelix(() => post.likePost(widget.visitor));
                                 },
                                 color: post.usersLiked.contains(post.userName)
                                     ? Colors.redAccent[700]
                                     : Colors.black,
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 5),
+                                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                                 child: Text(
                                   post.usersLiked.length.toString(),
                                   style: TextStyle(fontSize: 16),
@@ -120,9 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   textAlign: TextAlign.left,
                                   text: TextSpan(
                                     text: post.userName + "  ",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                                     children: [
                                       TextSpan(
                                           text: post.caption,
@@ -146,14 +138,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   updateTimeline() async {
-    DataSnapshot x =
-        await databaseReference.child('posts/' + widget.user).once();
+    DataSnapshot x = await databaseReference.child('posts/' + widget.user).once();
     List hello = x.value.keys.toList();
     hello.forEach((element) {
-      databaseReference
-          .child("timelines/" + widget.visitor)
-          .push()
-          .set(widget.user + '(split)' + element);
+      databaseReference.child("timelines/" + widget.visitor).push().set(widget.user + '(split)' + element);
     });
   }
 
@@ -166,10 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
         following = "Edit Profile";
       });
     } else {
-      databaseReference
-          .child('user_details/' + widget.user)
-          .once()
-          .then((snapshot) {
+      databaseReference.child('user_details/' + widget.user).once().then((snapshot) {
         snapshot.value['followers'] != null
             ? snapshot.value['followers'].contains(widget.visitor)
                 ? this.setState(() {
@@ -229,19 +214,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
-                                child: Text(
-                                  values['name'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 25),
+                                child: Container(
+                                  constraints:
+                                      BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 180),
+                                  child: Text(
+                                    values['name'],
+                                    style: TextStyle(fontSize: 23),
+                                    softWrap: true,
+                                  ),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(5, 0, 5, 15),
                                 child: Container(
-                                  constraints: new BoxConstraints(
-                                      maxWidth:
-                                          MediaQuery.of(context).size.width -
-                                              200),
+                                  constraints:
+                                      new BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 190),
                                   child: Text(
                                     values['bio'],
                                     softWrap: true,
@@ -265,8 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                                     child: FutureBuilder(
                                       future: getPosts(),
-                                      builder:
-                                          (context, AsyncSnapshot numPosts) {
+                                      builder: (context, AsyncSnapshot numPosts) {
                                         if (numPosts.hasData) {
                                           return Text(numPosts.data.toString(),
                                               style: TextStyle(
@@ -303,10 +289,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ListWithAppBar(
-                                          values['following'],
-                                          "Following",
-                                          widget.visitor),
+                                      builder: (context) =>
+                                          ListWithAppBar(values['following'], "Following", widget.visitor),
                                     ),
                                   );
                                 },
@@ -315,12 +299,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: Column(
                                     children: [
                                       Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                        child: Text(
-                                            values['following'] == null
-                                                ? "0"
-                                                : flwing.toString(),
+                                        padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                        child: Text(values['following'] == null ? "0" : flwing.toString(),
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 27,
@@ -328,8 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             )),
                                       ),
                                       Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                          padding: EdgeInsets.fromLTRB(0, 0, 0, 3),
                                           child: Text(
                                             'Following',
                                             style: TextStyle(
@@ -347,10 +326,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ListWithAppBar(
-                                      values['followers'],
-                                      "Followers",
-                                      widget.visitor),
+                                  builder: (context) =>
+                                      ListWithAppBar(values['followers'], "Followers", widget.visitor),
                                 ),
                               );
                             },
@@ -360,10 +337,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                    child: Text(
-                                        values['followers'] == null
-                                            ? "0"
-                                            : flwers.toString(),
+                                    child: Text(values['followers'] == null ? "0" : flwers.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 27,
@@ -387,6 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
+                    //!FollowButton and Neon button
                     Column(
                       children: [
                         Container(
@@ -394,16 +369,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 50.0,
                           // ignore: deprecated_member_use
                           child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                             elevation: 20,
                             onPressed: () async {
                               if (visitorIsUser == false) {
-                                DataSnapshot snapshotVisitor =
-                                    await databaseReference
-                                        .child('user_details/' + widget.visitor)
-                                        .child('following')
-                                        .once();
+                                DataSnapshot snapshotVisitor = await databaseReference
+                                    .child('user_details/' + widget.visitor)
+                                    .child('following')
+                                    .once();
                                 setState(() {
                                   if (values['followers'] != null) {
                                     followersTemp = values['followers'].toSet();
@@ -414,11 +387,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                     followersTemp = {widget.visitor};
 
                                   if (snapshotVisitor.value != null) {
-                                    visitorfollowingTemp =
-                                        snapshotVisitor.value.toSet();
+                                    visitorfollowingTemp = snapshotVisitor.value.toSet();
                                     visitorfollowingTemp.contains(widget.user)
-                                        ? visitorfollowingTemp
-                                            .remove(widget.user)
+                                        ? visitorfollowingTemp.remove(widget.user)
                                         : visitorfollowingTemp.add(widget.user);
                                   } else
                                     visitorfollowingTemp = {widget.visitor};
@@ -434,14 +405,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                     gradColor1 = Colors.teal[400];
                                     gradColor2 = Colors.tealAccent[400];
                                     following = 'Following';
-                                    databaseReference
-                                        .child('activity/' + widget.user)
-                                        .push()
-                                        .set({
+                                    databaseReference.child('activity/' + widget.user).push().set({
                                       "action": "following",
                                       "user": widget.visitor,
-                                      "time":
-                                          DateTime.now().microsecondsSinceEpoch
+                                      "time": DateTime.now().microsecondsSinceEpoch
                                     });
                                     updateTimeline();
                                   } else {
@@ -453,9 +420,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               } else
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PreEditProfile(widget.user)),
+                                  MaterialPageRoute(builder: (context) => PreEditProfile(widget.user)),
                                 );
                             },
                             padding: EdgeInsets.all(0.0),
@@ -471,14 +436,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   borderRadius: BorderRadius.circular(10.0)),
                               child: Container(
-                                constraints: BoxConstraints(
-                                    maxWidth: 400.0, minHeight: 50.0),
+                                constraints: BoxConstraints(maxWidth: 400.0, minHeight: 50.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   following,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
+                                  style: TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                               ),
                             ),
@@ -489,8 +452,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 70.0,
                           // ignore: deprecated_member_use
                           child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                             onPressed: () async {
                               await Navigator.push(
                                 context,
@@ -514,16 +476,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   borderRadius: BorderRadius.circular(10.0)),
                               child: Container(
-                                constraints: BoxConstraints(
-                                    maxWidth: 400.0,
-                                    maxHeight: 500.0,
-                                    minHeight: 500.0),
+                                constraints:
+                                    BoxConstraints(maxWidth: 400.0, maxHeight: 500.0, minHeight: 500.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   "Neons",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 25),
+                                  style: TextStyle(color: Colors.white, fontSize: 25),
                                 ),
                               ),
                             ),
@@ -533,7 +492,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
+                //!End of neon and following
+                Divider(
+                  color: Colors.black38,
+                  endIndent: 10,
+                  indent: 10,
+                  thickness: 2,
+                  height: 5,
+                ),
                 GridView.builder(
+                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -548,14 +516,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => UserPosts(
-                                      widget.user, widget.visitor, index)));
+                                  builder: (context) => UserPosts(widget.user, widget.visitor, index)));
                         },
                         onLongPress: () {
-                          Post post = createPost(widget.user,
-                              allPosts[index].values, allPosts[index].key);
-                          displayImage(
-                              context, post, allPosts[index].values['post']);
+                          Post post = createPost(widget.user, allPosts[index].values, allPosts[index].key);
+                          displayImage(context, post, allPosts[index].values['post']);
                         },
                         child: Hero(
                           tag: allPosts[index].values['post'],

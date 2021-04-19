@@ -58,10 +58,20 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+
+  fonts:
+    - family: Glacial
+      fonts:
+        - asset: fonts/glacial.otf
+          style: normal
+    - family: Vonique
+      fonts:
+        - asset: fonts/Vonique_Normal.ttf
+          style: normal
+
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -18,18 +18,18 @@ karlo bhay pls -
 
 messages -
 
+> sending space
 > push notification
 
 profile page -
 
+> when like scrooling up
 > set name and bio correctly
 > open container wtf
 
 activity -
 
 > push notifications
-> user profile
-> on tapping go to post
 
 edit profile -
 
@@ -93,3 +93,5 @@ done😀 -
 > > //check for time and unseen
 > > //?text poti kar rha hai
 > > /?chec if correct username is enterd
+> > // user profile
+> > // on tapping go to post

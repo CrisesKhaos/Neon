@@ -380,7 +380,7 @@ class _MessagePageState extends State<MessagePage> {
                                                               child: Text(
                                                                 post.data.userName,
                                                                 style: TextStyle(
-                                                                  color: Colors.white,
+                                                                  color: Colors.black,
                                                                 ),
                                                               ),
                                                               onTap: () {
@@ -426,7 +426,7 @@ class _MessagePageState extends State<MessagePage> {
                                                               text: post.data.userName + "  ",
                                                               style: TextStyle(
                                                                   fontWeight: FontWeight.bold,
-                                                                  color: Colors.white),
+                                                                  color: Colors.black),
                                                               children: [
                                                                 TextSpan(
                                                                     text: post.data.caption,
@@ -512,9 +512,9 @@ class _MessagePageState extends State<MessagePage> {
                         'unseen': ServerValue.increment(1)
                       });
                     }
-
-                    mainCont.clear();
                     FocusScope.of(context).unfocus();
+                    
+                    mainCont.clear();
                   }),
             ),
           ),
