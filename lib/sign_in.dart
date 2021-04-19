@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'creds_database.dart';
-// ignore: unused_import
 import 'register.dart';
 import 'widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,6 +27,7 @@ class _BodyState extends State<Body> {
   String validatorString;
   TextEditingController userController = new TextEditingController();
   TextEditingController passController = new TextEditingController();
+  bool obsPass = true;
   @override
   void initState() {
     super.initState();
@@ -160,6 +160,7 @@ class _BodyState extends State<Body> {
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                           child: TextField(
+                            obscureText: obsPass,
                             style: TextStyle(color: Colors.black),
                             controller: passController,
                             decoration: InputDecoration(
@@ -168,6 +169,25 @@ class _BodyState extends State<Body> {
                                   OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.yellow)),
                               labelText: "PASSWORD",
                               errorText: passError,
+                              suffixIcon: passController.text.isNotEmpty
+                                  ? obsPass
+                                      ? IconButton(
+                                          icon: Icon(Icons.remove_red_eye),
+                                          onPressed: () {
+                                            setState(() {
+                                              obsPass = !obsPass;
+                                            });
+                                          },
+                                        )
+                                      : IconButton(
+                                          icon: Icon(Icons.remove_red_eye_outlined),
+                                          onPressed: () {
+                                            setState(() {
+                                              obsPass = !obsPass;
+                                            });
+                                          },
+                                        )
+                                  : null,
                             ),
                             onChanged: (text) {
                               if (text.isNotEmpty) giveError(null, pass: 1);
@@ -178,34 +198,33 @@ class _BodyState extends State<Body> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 50, 0, 50),
                         child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Color.fromRGBO(32, 179, 179, 1),
-                              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 5),
-                              shape:
-                                  RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                            ),
-                            //highlightedBorderColor: Colors.pink,
-                            //borderSide: BorderSide(width: 2, color: Colors.pinkAccent[100]),
-                            child: Text(
-                              "Sign In",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () async {
-                              if (userController.text.isEmpty)
-                                giveError("Enter a username");
-                              else if (passController.text.isEmpty)
-                                giveError("Enter a password", pass: true);
-                              else if (await checkCredentials(
-                                  userController.text.toLowerCase(), passController.text)) {
-                                final SharedPreferences sharedPreferences =
-                                    await SharedPreferences.getInstance();
-                                sharedPreferences.setString(("user"), userController.text.toLowerCase());
-                                toHomePage(userController.text);
-                                dispose();
-                              } else {
-                                oneAlertBox(context, "The username and password you entered do not match");
-                              }
-                            }),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(32, 179, 179, 1),
+                            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 5),
+                            shape:
+                                RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                          ),
+                          child: Text(
+                            "Sign In",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () async {
+                            if (userController.text.isEmpty)
+                              giveError("Enter a username");
+                            else if (passController.text.isEmpty)
+                              giveError("Enter a password", pass: true);
+                            else if (await checkCredentials(
+                                userController.text.toLowerCase(), passController.text)) {
+                              final SharedPreferences sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.setString(("user"), userController.text.toLowerCase());
+                              toHomePage(userController.text);
+                              dispose();
+                            } else {
+                              oneAlertBox(context, "The username and password you entered do not match");
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

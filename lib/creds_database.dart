@@ -10,9 +10,7 @@ Map<String, dynamic> toJson(String user, String pass, String mail) {
 }
 
 void registerUser(String userName, String pass, String mail, String name) {
-  _databaseReference
-      .child('credentials/' + userName)
-      .set(toJson(userName, pass, mail));
+  _databaseReference.child('credentials/' + userName).set(toJson(userName, pass, mail));
   _databaseReference.child('user_details/' + userName).set({
     'followers': [userName],
     'following': [userName],
@@ -25,12 +23,13 @@ void registerUser(String userName, String pass, String mail, String name) {
 Future<bool> checkCredentials(String userName, String pass) async {
   //String temp = '';
   //bool value = false;
+  //
   Map<String, dynamic> rvalue = {
     'pass': "",
   };
 
-  DataSnapshot dataSnapshot =
-      await _databaseReference.child('credentials/' + userName).once();
+  DataSnapshot dataSnapshot = await _databaseReference.child('credentials/' + userName).once();
+  print('hiiiiiiiiii');
 
   try {
     dataSnapshot.value.forEach((key, value) {
