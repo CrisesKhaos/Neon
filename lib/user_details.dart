@@ -12,8 +12,7 @@ class UserDetails {
   UserDetails(this.user);
 
   void getDetails() async {
-    DataSnapshot _dataSnapshot =
-        await databaseReference.child('user_details/' + this.user).once();
+    DataSnapshot _dataSnapshot = await databaseReference.child('user_details/' + this.user).once();
     this.pfp = _dataSnapshot.value['pfp'];
     this.bio = _dataSnapshot.value['bio'];
     this.followers = _dataSnapshot.value["followers"];
@@ -24,10 +23,8 @@ class UserDetails {
 Future<List<UserDetails>> returnUserlist() async {
   List<UserDetails> usersDetails = [];
 
-  DataSnapshot _dataSnapshot =
-      await databaseReference.child('user_details').once();
+  DataSnapshot _dataSnapshot = await databaseReference.child('user_details').once();
   _dataSnapshot.value.forEach((key, value) {
-    print(key);
     UserDetails userDetail = new UserDetails(key);
     usersDetails.add(userDetail);
   });

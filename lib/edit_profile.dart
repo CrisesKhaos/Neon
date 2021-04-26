@@ -34,8 +34,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
               controller: passController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.lock_outline),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                 labelText: "Enter Your Password",
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 suffixIcon: IconButton(
@@ -44,9 +43,7 @@ class _PreEditProfileState extends State<PreEditProfile> {
                     _snapshot.data.value['pass'] == passController.text
                         ? Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EditProfile(widget.userName)),
+                            MaterialPageRoute(builder: (context) => EditProfile(widget.userName)),
                           )
                         : oneAlertBox(context, "Wrong password entered");
                     passController.clear();
@@ -79,8 +76,7 @@ class _EditProfileState extends State<EditProfile> {
   String url;
   final uuid = Uuid();
   void getDetails() async {
-    DataSnapshot y =
-        await databaseReference.child("user_details/" + widget.userName).once();
+    DataSnapshot y = await databaseReference.child("user_details/" + widget.userName).once();
     setState(() {
       uDetails = y;
     });
@@ -142,9 +138,7 @@ class _EditProfileState extends State<EditProfile> {
                       enabled: false,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 10, color: Colors.yellow)),
+                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                         labelText: _snapshot.data.key,
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -157,9 +151,7 @@ class _EditProfileState extends State<EditProfile> {
                       //enabled: false,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.mail_outline),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 10, color: Colors.yellow)),
+                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                         labelText: "E-mail",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -177,9 +169,7 @@ class _EditProfileState extends State<EditProfile> {
                       controller: this.passController,
                       decoration: InputDecoration(
                           prefixIcon: Icon(Icons.person_outline),
-                          border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 10, color: Colors.yellow)),
+                          border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                           labelText: "New Password"),
                     ),
                   ),
@@ -189,9 +179,7 @@ class _EditProfileState extends State<EditProfile> {
                       controller: this.confirmController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 10, color: Colors.yellow)),
+                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                         labelText: "Confirm New Password",
                         suffixIcon: confirmController.text.isNotEmpty
                             ? samePass
@@ -207,9 +195,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       onChanged: (text) {
                         setState(() {
-                          passController.text == confirmController.text
-                              ? samePass = true
-                              : samePass = false;
+                          passController.text == confirmController.text ? samePass = true : samePass = false;
                         });
                       },
                     ),
@@ -222,30 +208,18 @@ class _EditProfileState extends State<EditProfile> {
                         child: ElevatedButton(
                           child: Text("Confirm"),
                           onPressed: () async {
-                            if (passController.text.isEmpty &&
-                                mailChanged == true)
-                              databaseReference
-                                  .child("credentials/" + widget.userName)
-                                  .update({
+                            if (passController.text.isEmpty && mailChanged == true)
+                              databaseReference.child("credentials/" + widget.userName).update({
                                 "mail": this.mailController.text,
                               });
-                            else if (passController.text.isNotEmpty &&
-                                samePass == false)
-                              oneAlertBox(
-                                  context, "Your passwords do not match");
-                            else if (passController.text.isNotEmpty &&
-                                samePass == true)
-                              databaseReference
-                                  .child("credentials/" + widget.userName)
-                                  .update({
-                                "mail": this.mailController.text,
-                                "pass": this.confirmController.text
-                              });
+                            else if (passController.text.isNotEmpty && samePass == false)
+                              oneAlertBox(context, "Your passwords do not match");
+                            else if (passController.text.isNotEmpty && samePass == true)
+                              databaseReference.child("credentials/" + widget.userName).update(
+                                  {"mail": this.mailController.text, "pass": this.confirmController.text});
                             Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomePage(widget.userName)),
+                                MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
                                 (route) => false);
                             return;
                           },
@@ -292,10 +266,7 @@ class _EditProfileState extends State<EditProfile> {
       );
       //var llength = await _storage.ref().child('posts/' + user).list();
 
-      var snpsht = await _storage
-          .ref()
-          .child('pfp/' + user + '/' + this.uuid.v4())
-          .putFile(croppedImage);
+      var snpsht = await _storage.ref().child('pfp/' + user + '/' + this.uuid.v4()).putFile(croppedImage);
       postUrl = await snpsht.ref.getDownloadURL();
       databaseReference.child('user_details/' + user).update({"pfp": postUrl});
     } else {

@@ -30,6 +30,7 @@ dependencies:
   firebase_auth: ^1.0.2
   firebase_core: ^1.0.3
   firebase_database: ^6.1.2
+  firebase_messaging: ^9.1.1
   firebase_storage: ^8.0.2
   flutter_bloc: ^7.0.0
   font_awesome_flutter: ^9.0.0
@@ -58,7 +59,6 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-
   fonts:
     - family: Glacial
       fonts:
@@ -71,7 +71,6 @@ flutter:
 
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
-
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

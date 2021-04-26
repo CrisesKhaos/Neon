@@ -1,5 +1,6 @@
 learn -
 
+> Splash Screen!!
 > slivers
 > learn hash maps
 > login with google later??
@@ -11,6 +12,8 @@ learn -
 > route in main
 > about dialog
 > cache
+> lottie
+>bsdk randi discover fix kar jaldi se
 
 karlo bhay pls -
 
@@ -24,8 +27,6 @@ messages -
 profile page -
 
 > when like scrooling up
-> set name and bio correctly
-> open container wtf
 
 activity -
 
@@ -95,3 +96,4 @@ done😀 -
 > > /?chec if correct username is enterd
 > > // user profile
 > > // on tapping go to post
+> > // set name and bio correctly

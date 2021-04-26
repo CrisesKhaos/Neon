@@ -24,6 +24,7 @@ class _UserPostsState extends State<UserPosts> {
   List<Post> timeline = [];
   bool hasPosts = true;
   ItemScrollController _scrollController;
+  bool virgin = true;
   void changelix(Function lix) {
     this.setState(() {
       lix();
@@ -46,8 +47,7 @@ class _UserPostsState extends State<UserPosts> {
         .orderByChild('time')
         .onChildAdded
         .listen((Event event) async {
-      Post post =
-          createPost(widget.whos, event.snapshot.value, event.snapshot.key);
+      Post post = createPost(widget.whos, event.snapshot.value, event.snapshot.key);
 
       setState(() {
         timeline.add(post);
@@ -56,8 +56,7 @@ class _UserPostsState extends State<UserPosts> {
   }
 
   Future<String> getPfp(String whos) async {
-    DataSnapshot x =
-        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    DataSnapshot x = await databaseReference.child("user_details/" + whos + "/pfp").once();
     return x.value;
   }
 
@@ -69,23 +68,21 @@ class _UserPostsState extends State<UserPosts> {
       this.timeline = timeline.reversed.toList();
     });
     _scrollController = ItemScrollController();
-    if (SchedulerBinding.instance.schedulerPhase ==
-        SchedulerPhase.persistentCallbacks)
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks)
       setState(() {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollController
-            .scrollTo(index: widget.index, duration: Duration(seconds: 1)));
+        WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _scrollController.scrollTo(index: widget.index, duration: Duration(seconds: 1)));
       });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (SchedulerBinding.instance.schedulerPhase ==
-        SchedulerPhase.persistentCallbacks)
+    if (virgin) if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks)
       setState(() {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollController
-            .scrollTo(index: widget.index, duration: Duration(seconds: 1)));
+        WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _scrollController.scrollTo(index: widget.index, duration: Duration(seconds: 1)));
+          
       });
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Posts"),
@@ -115,8 +112,7 @@ class _UserPostsState extends State<UserPosts> {
                         Padding(
                           child: FutureBuilder(
                             future: getPfp(post.userName),
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
+                            builder: (BuildContext context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data.toString().isNotEmpty)
                                   return ClipOval(
@@ -136,13 +132,11 @@ class _UserPostsState extends State<UserPosts> {
                               return Container();
                             },
                           ),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),
                         Padding(
                           child: Text(post.userName),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         ),
                       ],
                     ),
@@ -150,16 +144,15 @@ class _UserPostsState extends State<UserPosts> {
                       tag: post.imageUrl,
                       child: Image.network(
                         post.imageUrl,
-                        loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent loadingProgress) {
+                        loadingBuilder:
+                            (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) {
                             return child;
                           }
                           return Center(
                             child: CircularProgressIndicator(
                               value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
                                   : null,
                             ),
                           );
@@ -172,16 +165,14 @@ class _UserPostsState extends State<UserPosts> {
                         IconButton(
                           icon: Icon(Icons.favorite),
                           onPressed: () {
-                            this.changelix(
-                                () => post.likePost(widget.usertemp));
+                            this.changelix(() => post.likePost(widget.usertemp));
                           },
                           color: post.usersLiked.contains(widget.usertemp)
                               ? Colors.redAccent[700]
                               : Colors.black,
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                           child: Text(
                             post.usersLiked.length.toString(),
                             style: TextStyle(fontSize: 16),
@@ -191,11 +182,8 @@ class _UserPostsState extends State<UserPosts> {
                         IconButton(
                             icon: Icon(Icons.send_rounded),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SendPost(widget.usertemp, post)));
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => SendPost(widget.usertemp, post)));
                             }),
                         IconButton(
                           alignment: Alignment.center,
@@ -205,22 +193,19 @@ class _UserPostsState extends State<UserPosts> {
                           onPressed: post.neon.contains(widget.usertemp)
                               ? null
                               : () async {
-                                  Neon neon = new Neon(post.rand, post.userName,
-                                      widget.usertemp, post.imageUrl);
+                                  Neon neon =
+                                      new Neon(post.rand, post.userName, widget.usertemp, post.imageUrl);
                                   if (await neon.monthExists())
-                                    oneAlertBox(context,
-                                        "You can Neon only one post per month!");
+                                    oneAlertBox(context, "You can Neon only one post per month!");
                                   else {
                                     neon.toDatabase();
                                     if (await neon.monthExists()) {
                                       neon.updateActivty();
-                                      oneAlertBox(
-                                          context, "Neon added succesfully!");
+                                      oneAlertBox(context, "Neon added succesfully!");
                                       post.neon.add(widget.usertemp);
                                       setState(() {});
                                     } else
-                                      oneAlertBox(
-                                          context, "Something went wrong! ");
+                                      oneAlertBox(context, "Something went wrong! ");
                                   }
                                 },
                         ),
@@ -234,9 +219,7 @@ class _UserPostsState extends State<UserPosts> {
                             textAlign: TextAlign.left,
                             text: TextSpan(
                               text: post.userName + "  ",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                               children: [
                                 TextSpan(
                                     text: post.caption,
@@ -256,9 +239,7 @@ class _UserPostsState extends State<UserPosts> {
                               textAlign: TextAlign.left,
                               text: TextSpan(
                                 text: post.comments[0].owner + "  ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                                 children: [
                                   TextSpan(
                                       text: post.comments[0].comment,
@@ -278,9 +259,7 @@ class _UserPostsState extends State<UserPosts> {
                               textAlign: TextAlign.left,
                               text: TextSpan(
                                 text: post.comments[1].owner + "  ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                                 children: [
                                   TextSpan(
                                       text: post.comments[1].comment,
@@ -305,8 +284,7 @@ class _UserPostsState extends State<UserPosts> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CommentsPage(post, widget.usertemp),
+                              builder: (context) => CommentsPage(post, widget.usertemp),
                             ),
                           );
                         },
@@ -323,22 +301,12 @@ class _UserPostsState extends State<UserPosts> {
                             onPressed: () {
                               if (commentCont.text.isNotEmpty) {
                                 databaseReference
-                                    .child("posts/" +
-                                        post.userName +
-                                        "/" +
-                                        post.rand)
+                                    .child("posts/" + post.userName + "/" + post.rand)
                                     .child("comments/")
                                     .push()
-                                    .set({
-                                  "user": widget.usertemp,
-                                  "comment": commentCont.text
-                                });
-                                post.comments.add(
-                                    Comment(widget.usertemp, commentCont.text));
-                                databaseReference
-                                    .child("activty/" + post.userName)
-                                    .push()
-                                    .set({
+                                    .set({"user": widget.usertemp, "comment": commentCont.text});
+                                post.comments.add(Comment(widget.usertemp, commentCont.text));
+                                databaseReference.child("activty/" + post.userName).push().set({
                                   "postId": post.rand,
                                   "post": post.imageUrl,
                                   "action": "comment",

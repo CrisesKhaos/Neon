@@ -475,7 +475,7 @@ class _MessagePageState extends State<MessagePage> {
                   icon: Icon(Icons.send),
                   splashColor: Colors.pinkAccent[100],
                   onPressed: () async {
-                    if (mainCont.text.isNotEmpty) {
+                    if (mainCont.text.isNotEmpty && mainCont.text != null) {
                       //* updating the time of the last msg sent so it can be sorted
                       //*and also the last message
                       //? of to whom
@@ -513,7 +513,7 @@ class _MessagePageState extends State<MessagePage> {
                       });
                     }
                     FocusScope.of(context).unfocus();
-                    
+
                     mainCont.clear();
                   }),
             ),
