@@ -41,6 +41,8 @@ dependencies:
   permission_handler: ^6.1.1
   scrollable_positioned_list: ^0.1.10
   shared_preferences: ^2.0.5
+  
+
 
 dev_dependencies:
   flutter_test:

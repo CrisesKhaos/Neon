@@ -1,6 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:main/comments.dart';
 import 'package:main/send_post.dart';
 import 'package:main/widgets.dart';
@@ -68,26 +67,16 @@ class _UserPostsState extends State<UserPosts> {
       this.timeline = timeline.reversed.toList();
     });
     _scrollController = ItemScrollController();
-    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks)
-      setState(() {
-        WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _scrollController.scrollTo(index: widget.index, duration: Duration(seconds: 1)));
-      });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (virgin) if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks)
-      setState(() {
-        WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _scrollController.scrollTo(index: widget.index, duration: Duration(seconds: 1)));
-          
-      });
     return Scaffold(
       appBar: AppBar(
         title: Text("Posts"),
       ),
       body: ScrollablePositionedList.builder(
+          initialScrollIndex: widget.index,
           itemScrollController: _scrollController,
           itemCount: timeline.length,
           itemBuilder: (context, index) {

@@ -116,8 +116,7 @@ void displayImage(BuildContext context, Post post, String tag) {
                           children: <Widget>[
                             Padding(
                               child: Text(post.userName),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                             ),
                           ],
                         ),
@@ -132,8 +131,7 @@ void displayImage(BuildContext context, Post post, String tag) {
                                   : Colors.black,
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 5),
+                              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                               child: Text(
                                 post.usersLiked.length.toString(),
                                 style: TextStyle(fontSize: 16),
@@ -147,9 +145,7 @@ void displayImage(BuildContext context, Post post, String tag) {
                                 padding: EdgeInsets.fromLTRB(10, 0, 7, 10),
                                 child: Text(
                                   post.userName,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                                 )),
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
@@ -170,8 +166,7 @@ void displayImage(BuildContext context, Post post, String tag) {
 }
 
 Future<String> getPfp(String whos) async {
-  DataSnapshot x =
-      await databaseReference.child("user_details/" + whos + "/pfp").once();
+  DataSnapshot x = await databaseReference.child("user_details/" + whos + "/pfp").once();
   return x.value;
 }
 

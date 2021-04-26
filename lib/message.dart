@@ -133,11 +133,13 @@ class _MessageListPageState extends State<MessageListPage> {
                         ),
                       ))
                   : null,
-              subtitle: Text(
-                lastMessages[index],
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              subtitle: lastMessages[index] != null
+                  ? Text(
+                      lastMessages[index],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : null,
             );
           else if (index == users.length && extra.length != 0)
             return Container(
