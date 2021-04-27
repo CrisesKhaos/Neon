@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:main/comments.dart';
 import 'package:main/database.dart';
 import 'package:main/post.dart';
@@ -14,7 +15,15 @@ class Message {
   final bool isPost;
   String postId;
   String postUser;
-  Message(this.isPost, {this.sender = '', this.message = '', this.postId = '', this.postUser = ''});
+  final String id;
+  Message(
+    this.isPost,
+    this.id, {
+    this.sender = '',
+    this.message = '',
+    this.postId = '',
+    this.postUser = '',
+  });
 }
 
 class MessageListPage extends StatefulWidget {
@@ -216,7 +225,6 @@ class _MessagePageState extends State<MessagePage> {
   List<Message> chats = [];
   bool virgin = true;
   TextEditingController mainCont = new TextEditingController();
-
   getChats() async {
     databaseReference
         .child("messages/" + widget.user + "/" + widget.toWhom)
@@ -227,9 +235,11 @@ class _MessagePageState extends State<MessagePage> {
       if (chat["isPost"] == null) {
         Message msg = Message(
           false,
+          event.snapshot.key,
           sender: chat["user"],
           message: chat["message"],
         );
+
         setState(() {
           if (virgin) virgin = false;
           chats.add(msg);
@@ -237,6 +247,7 @@ class _MessagePageState extends State<MessagePage> {
       } else {
         Message msg = Message(
           true,
+          event.snapshot.key,
           sender: chat['user'],
           postId: chat['postId'],
           postUser: chat['postUser'],
@@ -318,151 +329,204 @@ class _MessagePageState extends State<MessagePage> {
                                   ? Alignment.centerRight
                                   : Alignment.centerLeft,
                               child: chats[index].isPost
-                                  ? GestureDetector(
-                                      onTap: () async {
-                                        Post postPush = await getPost(index);
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => CommentsPage(
-                                                postPush,
-                                                widget.user,
-                                                title: "Post",
-                                              ),
-                                            ));
-                                      },
-                                      child: FutureBuilder(
-                                        future: getPost(index),
-                                        builder: (context, post) {
-                                          if (post.hasData)
-                                            return Container(
-                                              constraints: BoxConstraints(
-                                                  maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
-                                              margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
-                                              child: Card(
-                                                margin: EdgeInsets.all(0),
-                                                color: chats[index].sender == widget.user
-                                                    ? Colors.pink
-                                                    : Colors.white60,
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Padding(
-                                                          child: FutureBuilder(
-                                                            future: getPfp(post.data.userName),
-                                                            builder: (BuildContext context,
-                                                                AsyncSnapshot snapshot) {
-                                                              if (snapshot.hasData) {
-                                                                if (snapshot.data.toString().isNotEmpty)
-                                                                  return ClipOval(
-                                                                    child: Image.network(
-                                                                      snapshot.data,
-                                                                      height: 30,
-                                                                      width: 30,
-                                                                      fit: BoxFit.cover,
-                                                                    ),
-                                                                  );
-                                                                else
-                                                                  return Icon(
-                                                                    Icons.account_circle,
-                                                                    size: 32,
-                                                                  );
-                                                              }
-                                                              return Container();
-                                                            },
-                                                          ),
-                                                          padding: EdgeInsets.symmetric(
-                                                              horizontal: 10, vertical: 5),
-                                                        ),
-                                                        Align(
-                                                          alignment: Alignment.centerLeft,
-                                                          child: Padding(
-                                                            child: GestureDetector(
-                                                              child: Text(
-                                                                post.data.userName,
-                                                                style: TextStyle(
-                                                                  color: Colors.black,
-                                                                ),
-                                                              ),
-                                                              onTap: () {
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder: (context) => ProfilePage(
-                                                                            post.data.userName, widget.user,
-                                                                            solo: true)));
+                                  //? this is the post one
+                                  ? Slidable(
+                                      actionPane: SlidableBehindActionPane(),
+                                      secondaryActions: [
+                                        IconButton(
+                                            constraints: BoxConstraints(minWidth: 50),
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: Colors.red[600],
+                                            ),
+                                            onPressed: () async {
+                                              setState(() {
+                                                chats.removeAt(index);
+                                              });
+
+                                              await databaseReference
+                                                  .child("messages/" + widget.user + "/" + widget.toWhom)
+                                                  .child(chats[index].id)
+                                                  .remove();
+
+                                              await databaseReference
+                                                  .child("messages/" + widget.toWhom + "/" + widget.user)
+                                                  .child(chats[index].id)
+                                                  .remove();
+                                            })
+                                      ],
+                                      actionExtentRatio: 1 / 10,
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          Post postPush = await getPost(index);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => CommentsPage(
+                                                  postPush,
+                                                  widget.user,
+                                                  title: "Post",
+                                                ),
+                                              ));
+                                        },
+                                        child: FutureBuilder(
+                                          future: getPost(index),
+                                          builder: (context, post) {
+                                            if (post.hasData)
+                                              return Container(
+                                                constraints: BoxConstraints(
+                                                    maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
+                                                margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
+                                                child: Card(
+                                                  margin: EdgeInsets.all(0),
+                                                  color: chats[index].sender == widget.user
+                                                      ? Colors.pink
+                                                      : Colors.white60,
+                                                  child: Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Padding(
+                                                            child: FutureBuilder(
+                                                              future: getPfp(post.data.userName),
+                                                              builder: (BuildContext context,
+                                                                  AsyncSnapshot snapshot) {
+                                                                if (snapshot.hasData) {
+                                                                  if (snapshot.data.toString().isNotEmpty)
+                                                                    return ClipOval(
+                                                                      child: Image.network(
+                                                                        snapshot.data,
+                                                                        height: 30,
+                                                                        width: 30,
+                                                                        fit: BoxFit.cover,
+                                                                      ),
+                                                                    );
+                                                                  else
+                                                                    return Icon(
+                                                                      Icons.account_circle,
+                                                                      size: 32,
+                                                                    );
+                                                                }
+                                                                return Container();
                                                               },
                                                             ),
                                                             padding: EdgeInsets.symmetric(
                                                                 horizontal: 10, vertical: 5),
                                                           ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Image.network(
-                                                      post.data.imageUrl,
-                                                      loadingBuilder: (BuildContext context, Widget child,
-                                                          ImageChunkEvent loadingProgress) {
-                                                        if (loadingProgress == null) {
-                                                          return child;
-                                                        }
-                                                        return Center(
-                                                          child: CircularProgressIndicator(
-                                                            value: loadingProgress.expectedTotalBytes != null
-                                                                ? loadingProgress.cumulativeBytesLoaded /
-                                                                    loadingProgress.expectedTotalBytes
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                                    Align(
-                                                      alignment: Alignment.topLeft,
-                                                      child: Container(
-                                                          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                                          child: RichText(
-                                                            maxLines: 1,
-                                                            textAlign: TextAlign.left,
-                                                            text: TextSpan(
-                                                              text: post.data.userName + "  ",
-                                                              style: TextStyle(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: Colors.black),
-                                                              children: [
-                                                                TextSpan(
-                                                                    text: post.data.caption,
-                                                                    style: TextStyle(
-                                                                      fontWeight: FontWeight.normal,
-                                                                    ))
-                                                              ],
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              child: GestureDetector(
+                                                                child: Text(
+                                                                  post.data.userName,
+                                                                  style: TextStyle(
+                                                                    color: Colors.black,
+                                                                  ),
+                                                                ),
+                                                                onTap: () {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) => ProfilePage(
+                                                                              post.data.userName, widget.user,
+                                                                              solo: true)));
+                                                                },
+                                                              ),
+                                                              padding: EdgeInsets.symmetric(
+                                                                  horizontal: 10, vertical: 5),
                                                             ),
-                                                          )),
-                                                    ),
-                                                  ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Image.network(
+                                                        post.data.imageUrl,
+                                                        loadingBuilder: (BuildContext context, Widget child,
+                                                            ImageChunkEvent loadingProgress) {
+                                                          if (loadingProgress == null) {
+                                                            return child;
+                                                          }
+                                                          return Center(
+                                                            child: CircularProgressIndicator(
+                                                              value: loadingProgress.expectedTotalBytes !=
+                                                                      null
+                                                                  ? loadingProgress.cumulativeBytesLoaded /
+                                                                      loadingProgress.expectedTotalBytes
+                                                                  : null,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                      Align(
+                                                        alignment: Alignment.topLeft,
+                                                        child: Container(
+                                                            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                                            child: RichText(
+                                                              maxLines: 1,
+                                                              textAlign: TextAlign.left,
+                                                              text: TextSpan(
+                                                                text: post.data.userName + "  ",
+                                                                style: TextStyle(
+                                                                    fontWeight: FontWeight.bold,
+                                                                    color: Colors.black),
+                                                                children: [
+                                                                  TextSpan(
+                                                                      text: post.data.caption,
+                                                                      style: TextStyle(
+                                                                        fontWeight: FontWeight.normal,
+                                                                      ))
+                                                                ],
+                                                              ),
+                                                            )),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          else
-                                            return CircularProgressIndicator.adaptive();
-                                        },
+                                              );
+                                            else
+                                              return CircularProgressIndicator.adaptive();
+                                          },
+                                        ),
                                       ),
                                     )
-                                  : Card(
-                                      margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
-                                      color:
-                                          chats[index].sender == widget.user ? Colors.pink : Colors.white60,
-                                      child: Container(
-                                        margin: EdgeInsets.fromLTRB(7, 3, 7, 3),
-                                        constraints: BoxConstraints(
-                                            maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
-                                        padding: EdgeInsets.all(8),
-                                        child: Text(
-                                          chats[index].message,
-                                          style: TextStyle(
-                                              color: chats[index].sender == widget.user
-                                                  ? Colors.white
-                                                  : Colors.black),
+                                  //? this the not poast the post return a gesture detector where this return a card
+                                  : Slidable(
+                                      actionPane: SlidableBehindActionPane(),
+                                      actionExtentRatio: .6,
+                                      secondaryActions: [
+                                        IconSlideAction(
+                                            foregroundColor: Colors.red,
+                                            icon: Icons.delete,
+                                            onTap: () async {
+                                              setState(() {
+                                                chats.removeAt(index);
+                                              });
+                                              await databaseReference
+                                                  .child("messages/" + widget.user + "/" + widget.toWhom)
+                                                  .child(chats[index].id)
+                                                  .remove();
+
+                                              await databaseReference
+                                                  .child("messages/" + widget.toWhom + "/" + widget.user)
+                                                  .child(chats[index].id)
+                                                  .remove();
+                                            })
+                                      ],
+                                      child: Card(
+                                        margin: EdgeInsets.fromLTRB(4, 4, 7, 4),
+                                        color:
+                                            chats[index].sender == widget.user ? Colors.pink : Colors.white60,
+                                        child: Container(
+                                          margin: EdgeInsets.fromLTRB(7, 3, 7, 3),
+                                          constraints: BoxConstraints(
+                                              maxWidth: 3 * (MediaQuery.of(context).size.width) / 4),
+                                          padding: EdgeInsets.all(8),
+                                          child: Text(
+                                            chats[index].message,
+                                            style: TextStyle(
+                                                color: chats[index].sender == widget.user
+                                                    ? Colors.white
+                                                    : Colors.black),
+                                          ),
                                         ),
                                       ),
                                     ));
@@ -477,12 +541,15 @@ class _MessagePageState extends State<MessagePage> {
                   icon: Icon(Icons.send),
                   splashColor: Colors.pinkAccent[100],
                   onPressed: () async {
-                    if (mainCont.text.isNotEmpty && mainCont.text != null) {
+                    FocusScope.of(context).unfocus();
+                    String hello = mainCont.text;
+                    mainCont.clear();
+                    if (hello.isNotEmpty && hello != null) {
                       //* updating the time of the last msg sent so it can be sorted
                       //*and also the last message
                       //? of to whom
                       await databaseReference.child("messages/" + widget.user + "/" + widget.toWhom).update({
-                        "last": mainCont.text,
+                        "last": hello,
                         "time": -DateTime.now().microsecondsSinceEpoch,
                       });
                       await databaseReference
@@ -490,7 +557,7 @@ class _MessagePageState extends State<MessagePage> {
                           .push()
                           .set({
                         "user": widget.user,
-                        "message": mainCont.text,
+                        "message": hello,
                         "time": DateTime.now().millisecondsSinceEpoch,
                       });
                       await databaseReference
@@ -499,7 +566,7 @@ class _MessagePageState extends State<MessagePage> {
                           .set({
                         //user is the person send the message
                         "user": widget.user,
-                        "message": mainCont.text,
+                        "message": hello,
                         "time": DateTime.now().millisecondsSinceEpoch
                       });
 
@@ -510,13 +577,10 @@ class _MessagePageState extends State<MessagePage> {
 
                       await databaseReference.child("messages/" + widget.toWhom + "/" + widget.user).update({
                         "time": -DateTime.now().microsecondsSinceEpoch,
-                        "last": mainCont.text,
+                        "last": hello,
                         'unseen': ServerValue.increment(1)
                       });
                     }
-                    FocusScope.of(context).unfocus();
-
-                    mainCont.clear();
                   }),
             ),
           ),

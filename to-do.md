@@ -13,7 +13,14 @@ learn -
 > about dialog
 > cache
 > lottie
->bsdk randi discover fix kar jaldi se
+> bsdk randi discover fix kar jaldi se
+
+where where pice of shit headache post list state is used -
+
+> home page
+> neon
+> viwe user post
+> discover
 
 karlo bhay pls -
 
@@ -25,8 +32,6 @@ messages -
 > push notification
 
 profile page -
-
-> when like scrooling up
 
 activity -
 
@@ -42,8 +47,6 @@ neons -
 
 posts -
 
-> comments
-
 home page -
 
 > scrolls to the top
@@ -54,13 +57,10 @@ register -
 
 > trim
 > how to check if the user enter a $ or #
-> blur password
 > chec if mail is taken
 
 sign in -
 
-> show pass
-> blur pass
 > remember me
 
 done😀 -
@@ -97,3 +97,8 @@ done😀 -
 > > // user profile
 > > // on tapping go to post
 > > // set name and bio correctly
+> > //when like scrooling up
+> > //show pass
+> > //blur pass
+> > // blur password
+> > //comments

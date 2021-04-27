@@ -19,17 +19,12 @@ class _ActivityPageState extends State<ActivityPage> {
   List<Map<dynamic, dynamic>> main = [];
 
   Future<String> getPfp(String whos) async {
-    DataSnapshot x =
-        await databaseReference.child("user_details/" + whos + "/pfp").once();
+    DataSnapshot x = await databaseReference.child("user_details/" + whos + "/pfp").once();
     return x.value;
   }
 
   void getActivity() {
-    databaseReference
-        .child("activity/" + widget.user)
-        .orderByChild('time')
-        .onChildAdded
-        .listen((event) {
+    databaseReference.child("activity/" + widget.user).orderByChild('time').onChildAdded.listen((event) {
       if (!mounted) return;
       setState(() {
         main.add(event.snapshot.value);
@@ -52,6 +47,8 @@ class _ActivityPageState extends State<ActivityPage> {
     if (main.length != 0)
       return Scaffold(
         body: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
           itemCount: main.length,
           itemBuilder: (ctx, index) {
             return Card(
@@ -78,8 +75,7 @@ class _ActivityPageState extends State<ActivityPage> {
                           .child('posts/' + widget.user)
                           .child(main[index]['postId'])
                           .once();
-                      Post tempPost =
-                          createPost(widget.user, value.value, value.key);
+                      Post tempPost = createPost(widget.user, value.value, value.key);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -232,8 +228,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProfilePage(
+                                                  builder: (context) => ProfilePage(
                                                         main[index]['user'],
                                                         widget.user,
                                                         solo: true,
@@ -257,9 +252,7 @@ class _ActivityPageState extends State<ActivityPage> {
                           child: Image.network(main[index]["post"]),
                         )
                       : Text(''),
-                  subtitle: main[index]['action'] == 'comment'
-                      ? Text(main[index]['comment'])
-                      : null,
+                  subtitle: main[index]['action'] == 'comment' ? Text(main[index]['comment']) : null,
                 ),
               ),
             );

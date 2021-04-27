@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'package:main/user_profile_page.dart';
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'post.dart';
 
 //Widget diplayPost(Post post) {}
@@ -93,6 +93,29 @@ void oneAlertBox(BuildContext context, String title) {
           ],
         );
       });
+}
+
+void awesomeDialog(BuildContext context, String title, String subtitle, bool good) {
+  good == true
+      ? AwesomeDialog(
+          context: context,
+          dialogType: DialogType.SUCCES,
+          animType: AnimType.SCALE,
+          btnOkText: 'Okeyyy',
+          dismissOnBackKeyPress: true,
+          dismissOnTouchOutside: true,
+          btnOkOnPress: () {})
+      : AwesomeDialog(
+          context: context,
+          dialogType: DialogType.ERROR,
+          animType: AnimType.BOTTOMSLIDE,
+          title: title,
+          desc: subtitle,
+          btnCancelText: "Bruhh",
+          dismissOnBackKeyPress: true,
+          dismissOnTouchOutside: true,
+          btnCancelOnPress: () {})
+    ..show();
 }
 
 void displayImage(BuildContext context, Post post, String tag) {

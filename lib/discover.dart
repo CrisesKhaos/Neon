@@ -90,6 +90,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       child: Scaffold(
         appBar: AppBar(
           title: TabBar(
+            indicatorColor: Colors.white,
             tabs: [
               Tab(icon: Icon(Icons.photo_size_select_actual_rounded)),
               Tab(icon: Icon(Icons.search)),

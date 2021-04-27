@@ -27,24 +27,32 @@ class _NewPostPageState extends State<NewPostPage> {
     if (url == null) uploadImage(widget.userName);
     print(url);
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () async {
+              if (url != null) {
+                var post = new Post(widget.userName, url, captioncont.text);
+                var id = await post.uploadToDatabase();
+                List userFollowers = await getFollowers(widget.userName);
+                updateTimelines(userFollowers, id);
+                //toHomePage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
+                );
+              } else
+                oneAlertBox(context, "Select an Image");
+            },
+          )
+        ],
+      ),
+      body: ListView(
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: TextField(
-              controller: captioncont,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 5, color: Colors.yellow)),
-                labelText: 'Enter a caption',
-              ),
-            ),
-          ),
           if (url != null)
             Card(
-              shadowColor: Colors.pink[50],
-              elevation: 20,
+              elevation: 5,
               color: Colors.pinkAccent[50],
               child: Padding(
                 padding: EdgeInsets.all(4),
@@ -56,33 +64,18 @@ class _NewPostPageState extends State<NewPostPage> {
             Placeholder(
               color: Colors.black,
             ),
-          // ignore: deprecated_member_use
-          RaisedButton(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 50),
-            color: Colors.pinkAccent[200],
-            highlightColor: Colors.pinkAccent[900],
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50))),
-            child: Text(
-              'Post',
-              style: TextStyle(fontSize: 18, color: Colors.white),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: TextField(
+              minLines: 5,
+              maxLines: 5,
+              controller: captioncont,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.yellow)),
+                labelText: 'Enter a caption',
+              ),
             ),
-            onPressed: () async {
-              if (url != null) {
-                var post = new Post(widget.userName, url, captioncont.text);
-                var id = await post.uploadToDatabase();
-                List userFollowers = await getFollowers(widget.userName);
-                updateTimelines(userFollowers, id);
-                //toHomePage
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(widget.userName)),
-                );
-              } else
-                oneAlertBox(context, "Select an Image");
-            },
-          )
+          ),
         ],
       ),
     );
@@ -116,10 +109,7 @@ class _NewPostPageState extends State<NewPostPage> {
       );
       //var llength = await _storage.ref().child('posts/' + user).list();
 
-      var snpsht = await _storage
-          .ref()
-          .child('posts/' + user + '/' + uuid.v4())
-          .putFile(croppedImage);
+      var snpsht = await _storage.ref().child('posts/' + user + '/' + uuid.v4()).putFile(croppedImage);
       postUrl = await snpsht.ref.getDownloadURL();
       print(postUrl);
       setState(() {
@@ -133,10 +123,8 @@ class _NewPostPageState extends State<NewPostPage> {
 
   Future<List<dynamic>> getFollowers(String user) async {
     List<dynamic> followersList = [];
-    DataSnapshot followersSnapshot = await databaseReference
-        .child('user_details/' + widget.userName)
-        .child('followers')
-        .once();
+    DataSnapshot followersSnapshot =
+        await databaseReference.child('user_details/' + widget.userName).child('followers').once();
 
     followersList = followersSnapshot.value.toList();
 
@@ -145,10 +133,10 @@ class _NewPostPageState extends State<NewPostPage> {
 
   void updateTimelines(List followers, String id) {
     followers.forEach((tempFollower) {
-      databaseReference.child('timelines/' + tempFollower).push().set({
-        "post": widget.userName + "(split)" + id,
-        "time": DateTime.now().microsecondsSinceEpoch
-      });
+      databaseReference
+          .child('timelines/' + tempFollower)
+          .push()
+          .set({"post": widget.userName + "(split)" + id, "time": DateTime.now().microsecondsSinceEpoch});
     });
   }
 } //Class End
