@@ -314,12 +314,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: () {
                             //? fix this
                             if (userAvailable && goodPass && goodmail) {
-                              registerUser(userController.text.toLowerCase(), passController.text,
+                              registerUser(userController.text.toLowerCase().trim(), passController.text,
                                   mailController.text, nameController.text);
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomePage(userController.text.toLowerCase())),
+                                      builder: (context) =>
+                                          HomePage(userController.text.toLowerCase().trim())),
                                   (route) => false);
                             } else if (!userAvailable)
                               oneAlertBox(context, 'Enter a valid username my man');

@@ -42,7 +42,7 @@ dependencies:
   permission_handler: ^6.1.1
   scrollable_positioned_list: ^0.1.10
   shared_preferences: ^2.0.5
-  better_player: ^0.0.65
+  splashscreen: ^1.3.5
 
 dev_dependencies:
   flutter_test:
@@ -87,7 +87,8 @@ flutter:
   #fonts:
   #- family: Roboto
   #- fonts:
-  #- asset: assets\fonts\Roboto-Light.ttf
+  assets:
+    - assets/icon/icon.png
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

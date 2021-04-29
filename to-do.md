@@ -14,12 +14,13 @@ learn -
 > cache
 > lottie
 > bsdk randi discover fix kar jaldi se
+> splash screen
 
 where where pice of shit headache post list state is used -
 
 > home page
 > neon
-> viwe user post
+> view user post
 > discover
 
 karlo bhay pls -
@@ -28,7 +29,6 @@ karlo bhay pls -
 
 messages -
 
-> sending space
 > push notification
 
 profile page -
@@ -67,7 +67,6 @@ done😀 -
 
 > > // add posts of a person he is bein to the follwer
 > > //put everything in one fututre
-> > //splash screen
 > > //storage overlapping probably
 > > //FutureBuilder
 > > //slivers |no can do
@@ -103,3 +102,4 @@ done😀 -
 > > // blur password
 > > //comments
 > > // edit bio
+> > //sending space

@@ -74,9 +74,11 @@ class _EditProfileState extends State<EditProfile> {
   DataSnapshot _snapshot;
   bool samePass = true;
   bool passChanged = false;
+  bool goodPass = false;
   bool mailChanged = false;
   bool bioChanged = false;
   String url;
+  String passError;
   final uuid = Uuid();
   getDetails() async {
     DataSnapshot y = await databaseReference.child("user_details/" + widget.userName).once();
@@ -85,6 +87,10 @@ class _EditProfileState extends State<EditProfile> {
       uDetails = y;
       _snapshot = x;
     });
+  }
+
+  void giveError(String errorType) {
+    this.setState(() => passError = errorType);
   }
 
   @override
@@ -190,10 +196,32 @@ class _EditProfileState extends State<EditProfile> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: this.passController,
+                autocorrect: false,
                 decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
-                    labelText: "New Password"),
+                  prefixIcon: Icon(Icons.person_outline),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                  labelText: "New Password",
+                  errorText: passError,
+                  errorMaxLines: 5,
+                ),
+                onChanged: (text) {
+                  if (text.length > 7 &&
+                      text.contains(RegExp(r'[A-Z]')) &&
+                      text.contains(RegExp(r'[a-z]')) &&
+                      text.contains(RegExp(r'[0-9]'))) {
+                    setState(() {
+                      goodPass = true;
+                      passError = null;
+                    });
+                  } else {
+                    giveError(
+                      "Your password should be more than 8 characters and should contain\n- a mix  of Upper and Lower-Case letters [Aa -Zz]\n- at least one number [0-9]",
+                    );
+                    setState(() {
+                      goodPass = false;
+                    });
+                  }
+                },
               ),
             ),
             Padding(
@@ -231,7 +259,9 @@ class _EditProfileState extends State<EditProfile> {
                   child: ElevatedButton(
                     child: Text("Confirm"),
                     onPressed: () async {
-                      if (passController.text.isEmpty && mailChanged == true)
+                      if (!goodPass)
+                        awesomeDialog(context, "Smol brain", "Enter a valid password", false);
+                      else if (passController.text.isEmpty && mailChanged == true)
                         databaseReference.child("credentials/" + widget.userName).update({
                           "mail": this.mailController.text,
                         });
@@ -245,10 +275,11 @@ class _EditProfileState extends State<EditProfile> {
                         databaseReference.child("user_details/" + widget.userName).update({
                           "bio": bioCont.text.trim(),
                         });
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
-                          (route) => false);
+                      if (goodPass)
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
+                            (route) => false);
                       return;
                     },
                   ),
