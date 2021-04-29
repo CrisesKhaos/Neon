@@ -185,12 +185,13 @@ class _UserPostsState extends State<UserPosts> {
                                   Neon neon =
                                       new Neon(post.rand, post.userName, widget.usertemp, post.imageUrl);
                                   if (await neon.monthExists())
-                                    oneAlertBox(context, "You can Neon only one post per month!");
+                                    awesomeDialog(context, "Bruh Momentum",
+                                        "You can neon only one post per month", false);
                                   else {
                                     neon.toDatabase();
                                     if (await neon.monthExists()) {
                                       neon.updateActivty();
-                                      oneAlertBox(context, "Neon added succesfully!");
+                                      awesomeDialog(context, "Succes", "Neon added succesfully", true);
                                       post.neon.add(widget.usertemp);
                                       setState(() {});
                                     } else

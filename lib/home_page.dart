@@ -4,12 +4,14 @@ import 'package:main/comments.dart';
 import 'package:main/discover.dart';
 import 'package:main/message.dart';
 import 'package:main/neon.dart';
+import 'package:main/new_post.dart';
+// ignore: unused_import
+import 'package:main/new_post_select.dart';
 import 'package:main/send_post.dart';
 import 'package:main/user_profile_page.dart';
 import 'package:main/widgets.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'new_post.dart';
 import 'activity.dart';
 import 'post.dart';
 import 'sign_in.dart';
@@ -94,7 +96,7 @@ class HomePageState extends State<HomePage> {
                             icon: Icon(Icons.add),
                             onPressed: () {
                               Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => NewPostPage(widget.userName)));
+                                  MaterialPageRoute(builder: (context) => NewPostImagePage(widget.userName)));
                             },
                           )
                         : _currentIndex == 4
@@ -296,7 +298,8 @@ class PostListState extends State<PostList> {
           leading: IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NewPostPage(widget.usertemp)));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => NewPostImagePage(widget.usertemp)));
             },
           ),
           elevation: 20,
@@ -441,7 +444,7 @@ class PostListState extends State<PostList> {
                                     Neon neon =
                                         new Neon(post.rand, post.userName, widget.usertemp, post.imageUrl);
                                     if (await neon.monthExists())
-                                      awesomeDialog(context, "Stop it 😤",
+                                      awesomeDialog(context, "Bruh Momentum",
                                           "You can neon only one post per month", false);
                                     else {
                                       neon.toDatabase();

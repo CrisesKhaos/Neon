@@ -69,172 +69,195 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController confirmController = new TextEditingController();
   TextEditingController passController = new TextEditingController();
   TextEditingController mailController = new TextEditingController();
+  TextEditingController bioCont = new TextEditingController();
   DataSnapshot uDetails;
+  DataSnapshot _snapshot;
   bool samePass = true;
   bool passChanged = false;
   bool mailChanged = false;
+  bool bioChanged = false;
   String url;
   final uuid = Uuid();
-  void getDetails() async {
+  getDetails() async {
     DataSnapshot y = await databaseReference.child("user_details/" + widget.userName).once();
+    DataSnapshot x = await databaseReference.child("credentials/" + widget.userName).once();
     setState(() {
       uDetails = y;
+      _snapshot = x;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    getDetails();
+    getDetails().whenComplete(
+      () {
+        this.mailController.text = _snapshot.value['mail'];
+        this.bioCont.text = uDetails.value["bio"];
+        url = uDetails.value["pfp"];
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: databaseReference.child("credentials/" + widget.userName).once(),
-      builder: (context, AsyncSnapshot _snapshot) {
-        if (_snapshot.hasData) {
-          this.mailController.text = _snapshot.data.value['mail'];
-          url = uDetails.value["pfp"];
-
-          if (url.isEmpty) print(url);
-          //this.userController.text = _snapshot.data.key;
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Edit Profile'),
-            ),
-            body: Center(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      url.isEmpty
-                          ? Icon(
-                              Icons.account_circle,
-                              size: 170,
-                            )
-                          : ClipOval(
-                              child: Image.network(
-                                url,
-                                height: 170,
-                                width: 170,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          uploadImage(widget.userName);
-                        },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Profile'),
+      ),
+      body: Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                url.isEmpty
+                    ? Icon(
+                        Icons.account_circle,
+                        size: 170,
                       )
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      enabled: false,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
-                        labelText: _snapshot.data.key,
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: this.mailController,
-                      //enabled: false,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.mail_outline),
-                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
-                        labelText: "E-mail",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onChanged: (text) {
-                        if (text.trim() != _snapshot.data["mail"].trim())
-                          setState(() {
-                            passChanged = false;
-                          });
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: this.passController,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person_outline),
-                          border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
-                          labelText: "New Password"),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: this.confirmController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
-                        labelText: "Confirm New Password",
-                        suffixIcon: confirmController.text.isNotEmpty
-                            ? samePass
-                                ? Icon(
-                                    Icons.check_circle_rounded,
-                                    color: Colors.green,
-                                  )
-                                : Icon(
-                                    Icons.cancel_rounded,
-                                    color: Colors.red[800],
-                                  )
-                            : null,
-                      ),
-                      onChanged: (text) {
-                        setState(() {
-                          passController.text == confirmController.text ? samePass = true : samePass = false;
-                        });
-                      },
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          child: Text("Confirm"),
-                          onPressed: () async {
-                            if (passController.text.isEmpty && mailChanged == true)
-                              databaseReference.child("credentials/" + widget.userName).update({
-                                "mail": this.mailController.text,
-                              });
-                            else if (passController.text.isNotEmpty && samePass == false)
-                              oneAlertBox(context, "Your passwords do not match");
-                            else if (passController.text.isNotEmpty && samePass == true)
-                              databaseReference.child("credentials/" + widget.userName).update(
-                                  {"mail": this.mailController.text, "pass": this.confirmController.text});
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
-                                (route) => false);
-                            return;
-                          },
+                    : ClipOval(
+                        child: Image.network(
+                          url,
+                          height: 170,
+                          width: 170,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ],
-                  )
-                ],
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    uploadImage(widget.userName);
+                  },
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person_outline),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                  labelText: _snapshot.key,
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          );
-        } else {
-          return LinearProgressIndicator();
-        }
-      },
+            //? bio text field
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: this.bioCont,
+                minLines: 3,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.biotech),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                  labelText: "Biology",
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onChanged: (value) {
+                  if (!bioChanged && value.trim() != uDetails.value["bio"])
+                    setState(() {
+                      bioChanged = true;
+                    });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: this.mailController,
+                //enabled: false,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.mail_outline),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                  labelText: "E-mail",
+                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onChanged: (text) {
+                  if (text.trim() != _snapshot.value["mail"].trim())
+                    setState(() {
+                      if (!mailChanged) mailChanged = true;
+                    });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: this.passController,
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                    labelText: "New Password"),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: this.confirmController,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person_outline),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
+                  labelText: "Confirm New Password",
+                  suffixIcon: confirmController.text.isNotEmpty
+                      ? samePass
+                          ? Icon(
+                              Icons.check_circle_rounded,
+                              color: Colors.green,
+                            )
+                          : Icon(
+                              Icons.cancel_rounded,
+                              color: Colors.red[800],
+                            )
+                      : null,
+                ),
+                onChanged: (text) {
+                  setState(() {
+                    passController.text == confirmController.text ? samePass = true : samePass = false;
+                  });
+                },
+              ),
+            ),
+            Row(
+              children: [
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    child: Text("Confirm"),
+                    onPressed: () async {
+                      if (passController.text.isEmpty && mailChanged == true)
+                        databaseReference.child("credentials/" + widget.userName).update({
+                          "mail": this.mailController.text,
+                        });
+                      else if (passController.text.isNotEmpty && samePass == false)
+                        oneAlertBox(context, "Your passwords do not match");
+                      else if (passController.text.isNotEmpty && samePass == true)
+                        databaseReference
+                            .child("credentials/" + widget.userName)
+                            .update({"mail": this.mailController.text, "pass": this.confirmController.text});
+                      if (bioChanged)
+                        databaseReference.child("user_details/" + widget.userName).update({
+                          "bio": bioCont.text.trim(),
+                        });
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage(widget.userName)),
+                          (route) => false);
+                      return;
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 

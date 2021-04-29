@@ -331,6 +331,7 @@ class _MessagePageState extends State<MessagePage> {
                               child: chats[index].isPost
                                   //? this is the post one
                                   ? Slidable(
+                                      enabled: chats[index].sender == widget.user,
                                       actionPane: SlidableBehindActionPane(),
                                       secondaryActions: [
                                         IconButton(
@@ -488,8 +489,9 @@ class _MessagePageState extends State<MessagePage> {
                                         ),
                                       ),
                                     )
-                                  //? this the not poast the post return a gesture detector where this return a card
+                                  //? this the normal text message
                                   : Slidable(
+                                      enabled: chats[index].sender == widget.user,
                                       actionPane: SlidableBehindActionPane(),
                                       actionExtentRatio: .6,
                                       secondaryActions: [

@@ -39,7 +39,7 @@ activity -
 
 edit profile -
 
-> edit bio
+> check pass that they comply with rules
 
 neons -
 
@@ -102,3 +102,4 @@ done😀 -
 > > //blur pass
 > > // blur password
 > > //comments
+> > // edit bio
