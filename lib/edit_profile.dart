@@ -198,7 +198,7 @@ class _EditProfileState extends State<EditProfile> {
                 controller: this.passController,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person_outline),
+                  prefixIcon: Icon(Icons.lock),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                   labelText: "New Password",
                   errorText: passError,
@@ -229,7 +229,7 @@ class _EditProfileState extends State<EditProfile> {
               child: TextField(
                 controller: this.confirmController,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person_outline),
+                  prefixIcon: Icon(Icons.lock),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 10, color: Colors.yellow)),
                   labelText: "Confirm New Password",
                   suffixIcon: confirmController.text.isNotEmpty
