@@ -86,7 +86,7 @@ class _NewPostImagePageState extends State<NewPostImagePage> {
     final _imgpicker = ImagePicker();
     PickedFile image;
     final _storage = FirebaseStorage.instance;
-    image = await _imgpicker.getVideo(
+    image = await _imgpicker.getImage(
       source: ImageSource.gallery,
     );
 

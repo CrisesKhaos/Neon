@@ -117,7 +117,7 @@ class _ActivityPageState extends State<ActivityPage> {
                               size: 40,
                             );
                         }
-                        return Container();
+                        return Icon(Icons.account_circle);
                       },
                     ),
                   ),
