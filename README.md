@@ -1,9 +1,5 @@
 
-<h3>The link for the latest .apk</h3>
-
-
-https://drive.google.com/file/d/16L3C2JJS7jZN6udIWWCWKvUKZGJzKsXA/view?usp=sharing
-
+[Latest .apk](https://drive.google.com/file/d/16L3C2JJS7jZN6udIWWCWKvUKZGJzKsXA/view?usp=sharing)
 
 -> Be sure to report any bugs you find!! 
 
